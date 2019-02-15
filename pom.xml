@@ -9,11 +9,11 @@
 	</parent>
 
 	<groupId>de.embl.cba</groupId>
-	<artifactId>XXX</artifactId>
+	<artifactId>imaris-writer</artifactId>
 	<version>0.1.0</version>
 
-	<name>XXX</name>
-	<description>TODO</description>
+	<name>imaris-writer</name>
+	<description>imaris-writer</description>
 	<inceptionYear>2018</inceptionYear>
 	<organization>
 		<name>EMBL</name>
@@ -40,6 +40,7 @@
 			</roles>
 		</developer>
 	</developers>
+	
 	<contributors>
 		<contributor>
 			<name>TODO</name>
@@ -54,36 +55,23 @@
 	</mailingLists>
 	
 	<scm>
-<<<<<<< HEAD
-		<connection>scm:git:git://github.com/tischi/XXX</connection>
-		<developerConnection>scm:git:git@github.com/tischi/XXX</developerConnection>
+		<connection>scm:git:git://github.com/tischi/imaris-writer</connection>
+		<developerConnection>scm:git:git@github.com/tischi/imaris-writer</developerConnection>
 		<tag>HEAD</tag>
-		<url>https://github.com/tischi/XXX</url>
+		<url>https://github.com/tischi/imaris-writer</url>
 	</scm>
+	
 	<issueManagement>
 		<system>GitHub</system>
-		<url>https://github.com/tischi/XXX/issues</url>
-=======
-		<connection>scm:git:git://github.com/tischi/table-utils</connection>
-		<developerConnection>scm:git:git@github.com/tischi/table-utils</developerConnection>
-		<tag>HEAD</tag>
-		<url>https://github.com/tischi/table-utils</url>
-	</scm>
-	<issueManagement>
-		<system>GitHub</system>
-		<url>https://github.com/imglib/table-utils/issues</url>
->>>>>>> a34e547e851ac7ff0dca50bf1848b16ae6451b5c
+		<url>https://github.com/tischi/imaris-writer/issues</url>
 	</issueManagement>
+	
 	<ciManagement>
 		<system>None</system>
 	</ciManagement>
 
 	<properties>
-<<<<<<< HEAD
 		<package-name>de.embl.cba</package-name>
-=======
-		<package-name>de.embl.cba.tables</package-name>
->>>>>>> a34e547e851ac7ff0dca50bf1848b16ae6451b5c
 		<license.licenseName>bsd_2</license.licenseName>
 		<license.copyrightOwners>EMBL</license.copyrightOwners>
 		<imagej.app.directory>/Applications/Fiji.app/</imagej.app.directory>
@@ -119,12 +107,6 @@
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>ij</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.scijava</groupId>
-			<artifactId>bdv-utils</artifactId>
-			<version>0.1.26</version>
 		</dependency>
 
 	</dependencies>
