@@ -10,8 +10,9 @@ import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 
+import static de.embl.cba.imaris.H5Utils.writeDoubleAttribute;
 import static de.embl.cba.imaris.H5Utils.writeStringAttribute;
-import static de.embl.cba.imaris.ImarisUtils.HISTOGRAM;
+import static de.embl.cba.imaris.ImarisUtils.*;
 
 public class H5DataCubeWriter
 {

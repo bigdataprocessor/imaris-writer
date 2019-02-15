@@ -1,7 +1,7 @@
 package de.embl.cba.imaris;
 
-import de.embl.cba.bigDataTools2.logging.IJLazySwingLogger;
-import de.embl.cba.bigDataTools2.logging.Logger;
+import de.embl.cba.logging.IJLazySwingLogger;
+import de.embl.cba.logging.Logger;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.measure.Calibration;

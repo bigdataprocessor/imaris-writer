@@ -1,6 +1,5 @@
 package de.embl.cba.imaris;
 
-import de.embl.cba.bigDataTools2.utils.Utils;
 import ij.ImagePlus;
 import org.scijava.ItemVisibility;
 import org.scijava.command.Command;
@@ -9,6 +8,8 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 import java.io.File;
+
+import static de.embl.cba.imaris.ImarisUtils.delimitedStringToIntegerArray;
 
 
 @Plugin( type = Command.class, menuPath = "Plugins>BigDataTools>Imaris Writer" )
@@ -49,7 +50,7 @@ public class ImarisWriterCommand implements Command
 
 	private void setBinning( ImarisWriter writer )
 	{
-		final int[] binning = Utils.delimitedStringToIntegerArray( binningString, "," );
+		final int[] binning = delimitedStringToIntegerArray( binningString, "," );
 		writer.setBinning( binning );
 	}
 

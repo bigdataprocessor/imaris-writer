@@ -4,6 +4,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.measure.Calibration;
 import ij.plugin.Binner;
+import ij.plugin.Duplicator;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -117,6 +118,32 @@ public abstract class ImarisUtils {
 
         return ( impBinned );
     }
+
+    public static int[] delimitedStringToIntegerArray(String s, String delimiter) {
+
+        String[] sA = s.split(delimiter);
+        int[] nums = new int[sA.length];
+        for (int i = 0; i < nums.length; i++)
+        {
+            nums[i] = Integer.parseInt(sA[i].trim());
+        }
+
+        return nums;
+    }
+
+    public static ImagePlus getDataCube(ImagePlus image, int c, int t, int[] binning )
+    {
+        ImagePlus dataCube;
+
+        dataCube = new Duplicator().run( image, c + 1, c + 1, 1, image.getNSlices(), t + 1, t + 1 );
+
+        if ( binning[ 0 ] > 1 || binning[ 1 ] > 1 || binning[ 2 ] > 1 ){
+            Binner binner = new Binner();
+            dataCube = binner.shrink( dataCube, binning[0], binning[1], binning[2], binner.AVERAGE );
+        }
+        return dataCube;
+    }
+
 
 
 }

@@ -1,7 +1,6 @@
 
 package de.embl.cba.imaris;
 
-import de.embl.cba.bigDataTools2.utils.Utils;
 import ij.IJ;
 import ij.ImagePlus;
 import ncsa.hdf.hdf5lib.H5;
@@ -11,6 +10,8 @@ import org.scijava.log.LogService;
 
 import java.io.File;
 import java.util.ArrayList;
+
+import static de.embl.cba.imaris.ImarisUtils.getDataCube;
 
 public class ImarisWriter {
 
@@ -58,7 +59,7 @@ public class ImarisWriter {
             {
                 final String channelName = imarisDataSet.getChannelNames().get( c );
 
-                final ImagePlus dataCube = Utils.getDataCube( imp, c, t, binning );
+                final ImagePlus dataCube = getDataCube( imp, c, t, binning );
 
                 log( "Writing: " + name + ", time-point: " + ( t + 1 ) + ", channel: " + ( c + 1 ) + " ..." );
 
