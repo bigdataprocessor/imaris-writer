@@ -109,6 +109,11 @@
 			<artifactId>ij</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>cisd</groupId>
+			<artifactId>jhdf5</artifactId>
+		</dependency>
+
 	</dependencies>
 
 </project>
