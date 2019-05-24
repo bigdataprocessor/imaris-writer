@@ -27,9 +27,9 @@ public class ImarisDataSet {
 
     // Trying to make blocks of about 8000 voxels in size (8-bit)
     // Because I read somewhere that the OS reads often anyway in blocks of around 8000 bytes...
-    private static int CHUNKING_XY_HIGHEST_RESOLUTION = 256;
-    private static int CHUNKING_Z_HIGHEST_RESOLUTION = 1;
     private static int CHUNKING_XYZ = 64;
+    private static int CHUNKING_XY_HIGHEST_RESOLUTION = CHUNKING_XYZ;
+    private static int CHUNKING_Z_HIGHEST_RESOLUTION = CHUNKING_XYZ;
 
     public ImarisDataSet( File file )
     {

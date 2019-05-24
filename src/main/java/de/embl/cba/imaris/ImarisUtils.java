@@ -22,18 +22,13 @@ public abstract class ImarisUtils {
     public final static String HISTOGRAM = "Histogram";
     public final static String IMAGE_SIZE = "ImageSize";
     public final static String IMAGE_BLOCK_SIZE = "ImageBlockSize";
-
     public final static String RESOLUTION_LEVEL = "ResolutionLevel ";
     public final static String[] XYZ = new String[]{"X","Y","Z"};
     public final static String DATA_SET_INFO = "DataSetInfo";
     public final static String CHANNEL_COLOR = "Color";
     public final static String CHANNEL_NAME = "Name";
-
-
     public final static String DEFAULT_COLOR = "1.000 1.000 1.000";
-
     public final static String RESOLUTION_LEVELS_ATTRIBUTE = "ResolutionLevels";
-
 
     public final static int DIRECTORY = 0;
     public final static int FILENAME = 1;
@@ -74,43 +69,25 @@ public abstract class ImarisUtils {
         }
     }
 
-    public static ImagePlus bin( ImagePlus imp_, int[] binning_, String binningTitle, String method )
+    public static ImagePlus bin(
+            ImagePlus imp,
+            int[] binning,
+            String binningTitle )
     {
-        ImagePlus imp = imp_;
-        int[] binning = binning_;
-        String title = new String(imp.getTitle());
+
+        String title = imp.getTitle();
         Binner binner = new Binner();
 
-        Calibration saveCalibration = imp.getCalibration().copy(); // this is due to a bug in the binner
+        Calibration saveCalibration =
+                imp.getCalibration().copy(); // this is due to a bug in the binner
 
-        ImagePlus impBinned = null;
+        // TODO: maybe this could be done faster?
+        ImagePlus impBinned = binner.shrink(
+                imp,
+                binning[0], binning[1], binning[2],
+                binner.AVERAGE );
 
-        switch( method )
-        {
-            case "OPEN":
-                impBinned = binner.shrink(imp, binning[0], binning[1], binning[2], binner.MIN);
-                impBinned.setTitle("Open_" + title);
-                break;
-            case "CLOSE":
-                impBinned = binner.shrink(imp, binning[0], binning[1], binning[2], binner.MAX);
-                impBinned.setTitle("Close_" + title);
-                break;
-            case "AVERAGE":
-                impBinned = binner.shrink(imp, binning[0], binning[1], binning[2], binner.AVERAGE);
-                impBinned.setTitle(binningTitle + "_" + title);
-                break;
-            case "MIN":
-                impBinned = binner.shrink(imp, binning[0], binning[1], binning[2], binner.MIN);
-                impBinned.setTitle(binningTitle + "_Min_" + title);
-                break;
-            case "MAX":
-                impBinned = binner.shrink(imp, binning[0], binning[1], binning[2], binner.MAX);
-                impBinned.setTitle(binningTitle + "_Max_" + title);
-                break;
-            default:
-                IJ.showMessage("Error while binning; method not supported :"+method);
-                break;
-        }
+        impBinned.setTitle(binningTitle + "_" + title);
 
         // reset calibration of input image
         // necessary due to a bug in the binner
@@ -131,11 +108,9 @@ public abstract class ImarisUtils {
         return nums;
     }
 
-    public static ImagePlus getDataCube(ImagePlus image, int c, int t, int[] binning )
+    public static ImagePlus getDataCube( ImagePlus image, int c, int t, int[] binning )
     {
-        ImagePlus dataCube;
-
-        dataCube = new Duplicator().run( image, c + 1, c + 1, 1, image.getNSlices(), t + 1, t + 1 );
+        ImagePlus dataCube = new Duplicator().run( image, c + 1, c + 1, 1, image.getNSlices(), t + 1, t + 1 );
 
         if ( binning[ 0 ] > 1 || binning[ 1 ] > 1 || binning[ 2 ] > 1 ){
             Binner binner = new Binner();

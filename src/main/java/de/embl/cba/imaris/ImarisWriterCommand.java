@@ -19,45 +19,30 @@ public class ImarisWriterCommand implements Command
 	public LogService logService;
 
 	@Parameter( visibility = ItemVisibility.MESSAGE, persist = false )
-	private String information1 = "Creates an Imaris readable file with channels and time-points as separate files.";
+	private String message = "";
 
 	@Parameter
 	public ImagePlus imagePlus;
 
-	@Parameter( label = "Directory", style = "directory" )
+	@Parameter( label = "Output directory", style = "directory" )
 	public File directory;
 
-	@Parameter( label = "Binning [ x, y, z ]")
+//	@Parameter( label = "Binning [ x, y, z ]")
 	public String binningString = "1,1,1";
 
 	// TODO: multi-threaded writing, using multiple IJ instances
 	// TODO: multi-threaded writing, using the cluster
-	// TODO: conversion to 8-bit
 
 	@Override
 	public void run()
 	{
-		if ( ! isInputValid() ) return;
-
 		ImarisWriter writer = new ImarisWriter( imagePlus, directory.getAbsolutePath() );
 
 		writer.setLogService( logService );
 
-		setBinning( writer );
+		writer.setBinning( delimitedStringToIntegerArray( binningString, "," ) );
 
 		writer.write();
 	}
-
-	private void setBinning( ImarisWriter writer )
-	{
-		final int[] binning = delimitedStringToIntegerArray( binningString, "," );
-		writer.setBinning( binning );
-	}
-
-	private boolean isInputValid()
-	{
-		return true;
-	}
-
 
 }

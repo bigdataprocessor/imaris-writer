@@ -49,7 +49,10 @@ public class ImarisWriter {
     {
         ImarisDataSet imarisDataSet = createImarisDataSet();
 
-        ImarisWriter.writeHeaderFile( imarisDataSet, directory, name + "-header" + ".ims" );
+        ImarisWriter.writeHeaderFile(
+                imarisDataSet,
+                directory,
+                name + "-header" + ".ims" );
 
         H5DataCubeWriter writer = new H5DataCubeWriter();
 
@@ -57,11 +60,11 @@ public class ImarisWriter {
         {
             for ( int c = 0; c < imp.getNChannels(); ++c )
             {
-                final String channelName = imarisDataSet.getChannelNames().get( c );
-
                 final ImagePlus dataCube = getDataCube( imp, c, t, binning );
 
-                log( "Writing: " + name + ", time-point: " + ( t + 1 ) + ", channel: " + ( c + 1 ) + " ..." );
+                log( "Writing: " + name +
+                        ", time-point: " + ( t + 1 ) +
+                        ", channel: " + ( c + 1 ) + " ..." );
 
                 writer.writeImarisCompatibleResolutionPyramid( dataCube, imarisDataSet, c, t );
             }
@@ -82,7 +85,6 @@ public class ImarisWriter {
         return imarisDataSet;
     }
 
-
     private void log( String text )
     {
 
@@ -98,7 +100,6 @@ public class ImarisWriter {
         }
 
     }
-
 
     public static void writeCombinedHeaderFile( ArrayList < File > masterFiles, String filename )
     {

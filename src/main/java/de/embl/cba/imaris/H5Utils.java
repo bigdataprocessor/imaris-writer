@@ -10,11 +10,11 @@ import java.util.ArrayList;
 
 public abstract class H5Utils
 {
-
-
-    public static void writeIntegerAttribute( int dataset_id, String attrName, int[] attrValue ) throws HDF5Exception
+    public static void writeIntegerAttribute(
+            int dataset_id,
+            String attrName,
+            int[] attrValue ) throws HDF5Exception
     {
-
         long[] attrDims = { attrValue.length };
 
         // Create the data space for the attribute.

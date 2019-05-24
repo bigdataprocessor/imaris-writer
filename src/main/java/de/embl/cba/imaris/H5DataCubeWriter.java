@@ -21,9 +21,16 @@ public class H5DataCubeWriter
     private int memory_type;
     private int file_type;
 
-    public void writeImarisCompatibleResolutionPyramid( ImagePlus imp, ImarisDataSet idp, int c, int t ) throws HDF5LibraryException
+    public void writeImarisCompatibleResolutionPyramid(
+            ImagePlus imp,
+            ImarisDataSet idp,
+            int c,
+            int t ) throws HDF5LibraryException
     {
-        file_id = createFile( idp.getDataSetDirectory( c, t, 0 ), idp.getDataSetFilename( c, t, 0 ) );
+
+        file_id = createFile(
+                idp.getDataSetDirectory( c, t, 0 ),
+                idp.getDataSetFilename( c, t, 0 ) );
 
         setMemoryTypeAndFileType( imp );
 
@@ -37,8 +44,7 @@ public class H5DataCubeWriter
                 impResolutionLevel = ImarisUtils.bin(
                         impResolutionLevel,
                         idp.getRelativeBinnings().get( resolution ),
-                        "binned",
-                        "AVERAGE" );
+                        "binned" );
             }
 
             writeDataCubeAndAttributes(
@@ -47,7 +53,9 @@ public class H5DataCubeWriter
                     idp.getDimensions().get( resolution ),
                     idp.getChunks().get( resolution ) );
 
-            writeHistogramAndAttributes( impResolutionLevel, ImarisUtils.RESOLUTION_LEVEL + resolution );
+            writeHistogramAndAttributes(
+                    impResolutionLevel,
+                    ImarisUtils.RESOLUTION_LEVEL + resolution );
         }
 
         H5.H5Fclose( file_id );
@@ -78,7 +86,11 @@ public class H5DataCubeWriter
         }
     }
 
-    private void writeDataCubeAndAttributes(ImagePlus imp, String group, long[] dimensionXYZ, long[] chunkXYZ ) throws HDF5Exception
+    private void writeDataCubeAndAttributes(
+            ImagePlus imp,
+            String group,
+            long[] dimensionXYZ,
+            long[] chunkXYZ ) throws HDF5Exception
     {
 
         // change dimension order to fit hdf5
@@ -92,7 +104,6 @@ public class H5DataCubeWriter
                 chunkXYZ[ 2 ],
                 chunkXYZ[ 1 ],
                 chunkXYZ[ 0 ] };
-
 
         int group_id = H5Utils.createGroup( file_id, group );
 
@@ -162,7 +173,9 @@ public class H5DataCubeWriter
             }
             else
             {
-                System.out.println( "Very large data set => saving 8-bit hdf5 plane-wise to circumvent java indexing issues." );
+                System.out.println( "Very large data set " +
+                        "=> saving 8-bit hdf5 plane-wise " +
+                        "to circumvent java indexing issues." );
 
                 for ( int i = 0; i < imp.getNSlices(); ++i )
                 {
@@ -183,7 +196,8 @@ public class H5DataCubeWriter
                     );
 
                     // Create memspace
-                    int memspace = H5.H5Screate_simple( 1, new long[]{slice.length}, null );
+                    int memspace = H5.H5Screate_simple( 1,
+                            new long[]{slice.length}, null );
 
                     // write
                     H5.H5Dwrite( dataset_id,
@@ -202,6 +216,7 @@ public class H5DataCubeWriter
             short[][] data = getShortData( imp, 0, 0 );
 
             long numVoxels = data.length * data[ 0 ].length;
+
             boolean javaIndexingIssue = ( numVoxels > ( Integer.MAX_VALUE - 100 ) );
 
             if ( ! javaIndexingIssue )
@@ -234,7 +249,8 @@ public class H5DataCubeWriter
                     );
 
                     // Create memspace
-                    int memspace = H5.H5Screate_simple( 1, new long[]{slice.length}, null );
+                    int memspace = H5.H5Screate_simple( 1,
+                            new long[]{slice.length}, null );
 
                     // write
                     H5.H5Dwrite( dataset_id,
@@ -248,7 +264,7 @@ public class H5DataCubeWriter
             }
 
         }
-        else if( imp.getBitDepth()==32 )
+        else if( imp.getBitDepth() == 32 )
         {
             float[][] data = getFloatData( imp, 0, 0 );
 
@@ -393,7 +409,7 @@ public class H5DataCubeWriter
         for (int z = 0; z < imp.getNSlices(); z++)
         {
             int n = imp.getStackIndex(c+1, z+1, t+1);
-            data[z] = (short[]) stack.getProcessor(n).getPixels();
+            data[ z ] = ( short[] ) stack.getProcessor(n).getPixels();
         }
 
         return ( data );
