@@ -78,9 +78,8 @@ public class ImarisWriter {
         ImarisDataSet imarisDataSet = new ImarisDataSet( imp, binning, directory, name );
 
         if ( channelNames != null && channelNames.size() == imarisDataSet.getNumChannels() )
-        {
             imarisDataSet.setChannelNames( channelNames );
-        }
+
 
         return imarisDataSet;
     }

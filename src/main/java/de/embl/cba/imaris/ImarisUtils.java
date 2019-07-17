@@ -110,15 +110,25 @@ public abstract class ImarisUtils {
 
     public static ImagePlus getDataCube( ImagePlus image, int c, int t, int[] binning )
     {
-        ImagePlus dataCube = new Duplicator().run( image, c + 1, c + 1, 1, image.getNSlices(), t + 1, t + 1 );
+        ImagePlus dataCube = new Duplicator().run(
+                image, c + 1, c + 1, 1,
+                image.getNSlices(), t + 1, t + 1 );
 
         if ( binning[ 0 ] > 1 || binning[ 1 ] > 1 || binning[ 2 ] > 1 ){
             Binner binner = new Binner();
-            dataCube = binner.shrink( dataCube, binning[0], binning[1], binning[2], binner.AVERAGE );
+            dataCube = binner.shrink(
+                    dataCube,
+                    binning[0],
+                    binning[1],
+                    binning[2],
+                    binner.AVERAGE );
         }
         return dataCube;
     }
 
 
-
+    public static int getMaximumArrayIndex( )
+    {
+        return Integer.MAX_VALUE - 10;
+    }
 }

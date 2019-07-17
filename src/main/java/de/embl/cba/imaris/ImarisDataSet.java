@@ -212,7 +212,10 @@ public class ImarisDataSet {
 
         int impByteDepth = imp.getBitDepth() / 8;
 
-        long[] initialChunks = new long[]{ CHUNKING_XY_HIGHEST_RESOLUTION, CHUNKING_XY_HIGHEST_RESOLUTION, CHUNKING_Z_HIGHEST_RESOLUTION };
+        long[] initialChunks = new long[]{
+                CHUNKING_XY_HIGHEST_RESOLUTION,
+                CHUNKING_XY_HIGHEST_RESOLUTION,
+                CHUNKING_Z_HIGHEST_RESOLUTION };
         int[] initialBinning = new int[]{ 1, 1, 1 };
 
         for ( int iResolution = 0; ; ++iResolution )
@@ -228,7 +231,8 @@ public class ImarisDataSet {
 
                 currentChunks = initialChunks;
 
-                ensureChunkSizesNotExceedingCurrentImageDimensions( currentDimensions, currentChunks );
+                ensureChunkSizesNotExceedingCurrentImageDimensions(
+                        currentDimensions, currentChunks );
 
                 currentRelativeBinning = initialBinning;
             }
@@ -236,17 +240,25 @@ public class ImarisDataSet {
             {
 
                 long[] lastDimensions = dimensions.get( iResolution - 1 );
-                long lastVolume = lastDimensions[ 0 ] * lastDimensions[ 1 ] * lastDimensions[ 2 ];
+                long lastVolume = lastDimensions[ 0 ]
+                        * lastDimensions[ 1 ] * lastDimensions[ 2 ];
 
-                setDimensionsAndBinningsForThisResolutionLayer( currentDimensions, currentRelativeBinning, lastDimensions, lastVolume );
+                setDimensionsAndBinningsForThisResolutionLayer(
+                        currentDimensions,
+                        currentRelativeBinning,
+                        lastDimensions,
+                        lastVolume );
 
                 currentChunks = getChunksForThisResolutionLayer( currentDimensions );
 
             }
 
-            currentVolume = currentDimensions[ 0 ] * currentDimensions[ 1 ] * currentDimensions[ 2 ];
+            currentVolume = currentDimensions[ 0 ]
+                    * currentDimensions[ 1 ] * currentDimensions[ 2 ];
 
-            adaptZChunkingToAccomodateJavaIndexingLimitations( currentVolume, currentChunks );
+            adaptZChunkingToAccomodateJavaIndexingLimitations(
+                    currentVolume * impByteDepth,
+                    currentChunks );
 
             dimensions.add( currentDimensions );
 
@@ -265,11 +277,17 @@ public class ImarisDataSet {
 
     }
 
-    private void setDimensionsAndBinningsForThisResolutionLayer( long[] currentDimensions, int[] currentRelativeBinning, long[] lastDimensions, long lastVolume )
+    private void setDimensionsAndBinningsForThisResolutionLayer(
+            long[] currentDimensions,
+            int[] currentRelativeBinning,
+            long[] lastDimensions,
+            long lastVolume )
     {
         for ( int d = 0; d < 3; d++ )
         {
-            long lastSizeThisDimensionSquared = lastDimensions[ d ] * lastDimensions[ d ];
+            long lastSizeThisDimensionSquared =
+                    lastDimensions[ d ] * lastDimensions[ d ];
+
             long lastPerpendicularPlaneSize = lastVolume / lastDimensions[ d ];
 
             if ( 100 * lastSizeThisDimensionSquared > lastPerpendicularPlaneSize )
@@ -291,30 +309,30 @@ public class ImarisDataSet {
         long[] currentChunks;
         currentChunks = new long[]{ CHUNKING_XYZ, CHUNKING_XYZ, CHUNKING_XYZ };
 
-        ensureChunkSizesNotExceedingCurrentImageDimensions( currentDimensions, currentChunks );
+        ensureChunkSizesNotExceedingCurrentImageDimensions(
+                currentDimensions, currentChunks );
 
         return currentChunks;
     }
 
-    private void ensureChunkSizesNotExceedingCurrentImageDimensions( long[] currentDimensions, long[] currentChunks )
+    private void ensureChunkSizesNotExceedingCurrentImageDimensions(
+            long[] currentDimensions,
+            long[] currentChunks )
     {
         for ( int d = 0; d < 3; d++ )
-        {
             if ( currentChunks[ d ] > currentDimensions[ d ] )
-            {
                 currentChunks[ d ] = currentDimensions[ d ];
-            }
-        }
     }
 
-    private void adaptZChunkingToAccomodateJavaIndexingLimitations( long currentVolume, long[] currentChunks )
+    private void adaptZChunkingToAccomodateJavaIndexingLimitations(
+            long currentVolume,
+            long[] currentChunks )
     {
-        if ( currentVolume > Integer.MAX_VALUE - 100 )
+        if ( currentVolume > ImarisUtils.getMaximumArrayIndex() )
         {
             currentChunks[ 2 ] = 1;
-            IJ.log( "Data set is larger than " + Integer.MAX_VALUE );
-            // this forces plane wise writing and thus
-            // avoids java indexing issues when saving the data to HDF5_STACKS
+            IJ.log( "Data volume is larger than maximum Java indexing. \n" +
+                    "Thus, setting z-chucking at this resolution level to 1." );
         }
     }
 

@@ -136,7 +136,7 @@ public class H5DataCubeWriter
             e.printStackTrace();
         }
 
-        writeImagePlusData( dataset_id, imp );
+        writeImagePlusData( dataset_id, imp, chunkXYZ );
 
         // Attributes
         writeSizeAttributes( group_id, dimensionXYZ );
@@ -150,17 +150,18 @@ public class H5DataCubeWriter
 
     }
 
-    private void writeImagePlusData( int dataset_id, ImagePlus imp ) throws HDF5Exception
+    private void writeImagePlusData( int dataset_id, ImagePlus imp, long[] chunkXYZ ) throws HDF5Exception
     {
-
         int dataspace_id;
 
         if( imp.getBitDepth() == 8 )
         {
             byte[][] data = getByteData( imp, 0, 0 );
 
-            long numVoxels = data.length * data[0].length;
-            boolean javaIndexingIssue = ( numVoxels > Integer.MAX_VALUE - 100 );
+            long numBytes = data.length * data[0].length;
+
+            boolean javaIndexingIssue =
+                    numBytes > ImarisUtils.getMaximumArrayIndex();
 
             if ( ! javaIndexingIssue )
             {
@@ -197,7 +198,7 @@ public class H5DataCubeWriter
 
                     // Create memspace
                     int memspace = H5.H5Screate_simple( 1,
-                            new long[]{slice.length}, null );
+                            new long[]{ slice.length }, null );
 
                     // write
                     H5.H5Dwrite( dataset_id,
@@ -215,9 +216,11 @@ public class H5DataCubeWriter
         {
             short[][] data = getShortData( imp, 0, 0 );
 
-            long numVoxels = data.length * data[ 0 ].length;
+            // Hdf5 will convert the short array to a byte array
+            // Thus it will need twice as many bytes as there are shorts
+            long numBytes = 2L * data.length * data[ 0 ].length;
 
-            boolean javaIndexingIssue = ( numVoxels > ( Integer.MAX_VALUE - 100 ) );
+            boolean javaIndexingIssue = numBytes > getMaximumArrayIndex();
 
             if ( ! javaIndexingIssue )
             {
@@ -230,17 +233,29 @@ public class H5DataCubeWriter
             }
             else
             {
-                for ( int i = 0; i < imp.getNSlices(); ++i )
-                {
-                    short[] slice = data[ i ];
+                final long dz = 1; //chunkXYZ[ 2 ];
 
-                    long[] start = new long[]{ i, 0, 0 };
-                    long[] count = new long[]{ 1, imp.getHeight(), imp.getWidth()};
+                for ( int z = 0; z < imp.getNSlices(); z += dz )
+                {
+
+                    long nz = dz;
+
+                    if ( z + nz >= imp.getNSlices() )
+                        nz = ( imp.getNSlices() - z - 1  );
+
+                    short[] slice = data[ z ];
+
+                    long[] start = new long[]{ z, 0, 0 };
+                    long[] count = new long[]{
+                            nz,
+                            imp.getHeight(),
+                            imp.getWidth()};
 
                     dataspace_id = H5.H5Dget_space( dataset_id );
 
                     // Select hyperslab in file dataspace
-                    H5.H5Sselect_hyperslab( dataspace_id,
+                    H5.H5Sselect_hyperslab(
+                            dataspace_id,
                             HDF5Constants.H5S_SELECT_SET,
                             start,
                             null,
@@ -249,8 +264,10 @@ public class H5DataCubeWriter
                     );
 
                     // Create memspace
-                    int memspace = H5.H5Screate_simple( 1,
-                            new long[]{slice.length}, null );
+                    int memspace = H5.H5Screate_simple(
+                            1,
+                            new long[]{ slice.length * nz },
+                            null );
 
                     // write
                     H5.H5Dwrite( dataset_id,
@@ -374,6 +391,7 @@ public class H5DataCubeWriter
 
     private byte[][] getByteData(ImagePlus imp, int c, int t )
     {
+
         ImageStack stack = imp.getStack();
 
         int[] size = new int[]{
@@ -387,15 +405,16 @@ public class H5DataCubeWriter
         for (int z = 0; z < imp.getNSlices(); z++)
         {
             int n = imp.getStackIndex(c+1, z+1, t+1);
-            data[z] = (byte[]) stack.getProcessor(n).getPixels();
+            data[ z ] = (byte[]) stack.getProcessor( n ).getPixels();
         }
 
         return ( data );
 
     }
 
-    private short[][] getShortData(ImagePlus imp, int c, int t)
+    private short[][] getShortData( ImagePlus imp, int c, int t )
     {
+
         ImageStack stack = imp.getStack();
 
         int[] size = new int[]{
@@ -404,12 +423,14 @@ public class H5DataCubeWriter
                 imp.getNSlices()
         };
 
+        // TODO: it is really annoying that it needs to copy the data here...
+        // For an imglib2 ArrayImg this might not be necessary
         short[][] data = new short[ size[2] ] [ size[1] * size[0] ];
 
         for (int z = 0; z < imp.getNSlices(); z++)
         {
             int n = imp.getStackIndex(c+1, z+1, t+1);
-            data[ z ] = ( short[] ) stack.getProcessor(n).getPixels();
+            data[ z ] = ( short[] ) stack.getProcessor( n ).getPixels();
         }
 
         return ( data );
