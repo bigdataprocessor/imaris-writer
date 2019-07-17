@@ -257,7 +257,7 @@ public class ImarisDataSet {
                     * currentDimensions[ 1 ] * currentDimensions[ 2 ];
 
             adaptZChunkingToAccomodateJavaIndexingLimitations(
-                    currentVolume * impByteDepth,
+                    currentVolume,
                     currentChunks );
 
             dimensions.add( currentDimensions );

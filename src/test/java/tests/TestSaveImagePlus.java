@@ -13,20 +13,10 @@ public class TestSaveImagePlus
 	public void saveShortImagePlusAsImaris( )
 	{
 		final net.imagej.ImageJ ij = new net.imagej.ImageJ();
-
 		ij.ui().showUI();
 
-		ImarisWriter writer = new ImarisWriter( createShortImagePlus(), "/Users/tischer/Desktop/tmp" );
-
-		writer.setLogService( ij.log() );
-
-		writer.write();
-	}
-
-	private static ImagePlus createShortImagePlus()
-	{
-		final int sizeZ = 20; // set to 300 to test java indexing issues
-		final int sizeXY = 2048;
+		final int sizeZ = 600; // set to 700 to test java indexing issues
+		final int sizeXY = 2048; // set to 2048 to test java indexing issues
 		final ImageStack imageStack = new ImageStack( sizeXY, sizeXY, sizeZ );
 
 		for ( int i = 1; i <= sizeZ; i++ )
@@ -43,8 +33,13 @@ public class TestSaveImagePlus
 		ImagePlus imp = new ImagePlus( "image", imageStack );
 		imp.setDimensions( 1, sizeZ, 1 );
 
-		return imp;
+		ImarisWriter writer = new ImarisWriter( imp, "/Users/tischer/Desktop/tmp" );
+
+		writer.setLogService( ij.log() );
+
+		writer.write();
 	}
+
 
 	public static void main( String[] args )
 	{

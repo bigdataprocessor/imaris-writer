@@ -11,7 +11,7 @@ import org.scijava.log.LogService;
 import java.io.File;
 import java.util.ArrayList;
 
-import static de.embl.cba.imaris.ImarisUtils.getDataCube;
+import static de.embl.cba.imaris.ImarisUtils.getVolume;
 
 public class ImarisWriter {
 
@@ -30,10 +30,10 @@ public class ImarisWriter {
         this.binning = new int[]{ 1, 1, 1 };
     }
 
-    public void setBinning( int[] binning )
-    {
-        this.binning = binning;
-    }
+//    public void setBinning( int[] binning )
+//    {
+//        this.binning = binning;
+//    }
 
     public void setLogService( LogService logService )
     {
@@ -60,13 +60,13 @@ public class ImarisWriter {
         {
             for ( int c = 0; c < imp.getNChannels(); ++c )
             {
-                final ImagePlus dataCube = getDataCube( imp, c, t, binning );
+                final ImagePlus volume = getVolume( imp, c, t, binning );
 
                 log( "Writing: " + name +
                         ", time-point: " + ( t + 1 ) +
                         ", channel: " + ( c + 1 ) + " ..." );
 
-                writer.writeImarisCompatibleResolutionPyramid( dataCube, imarisDataSet, c, t );
+                writer.writeImarisCompatibleResolutionPyramid( volume, imarisDataSet, c, t );
             }
         }
 

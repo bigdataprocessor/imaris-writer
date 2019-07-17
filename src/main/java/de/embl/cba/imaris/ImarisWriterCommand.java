@@ -28,7 +28,7 @@ public class ImarisWriterCommand implements Command
 	public File directory;
 
 //	@Parameter( label = "Binning [ x, y, z ]")
-	public String binningString = "1,1,1";
+//	public String binningString = "1,1,1";
 
 	// TODO: multi-threaded writing, using multiple IJ instances
 	// TODO: multi-threaded writing, using the cluster
@@ -40,7 +40,7 @@ public class ImarisWriterCommand implements Command
 
 		writer.setLogService( logService );
 
-		writer.setBinning( delimitedStringToIntegerArray( binningString, "," ) );
+		// writer.setBinning( delimitedStringToIntegerArray( binningString, "," ) );
 
 		writer.write();
 	}

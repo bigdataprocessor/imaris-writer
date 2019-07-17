@@ -154,17 +154,15 @@ public class H5DataCubeWriter
     {
         int dataspace_id;
 
+        long numElements = 1L * imp.getWidth() * imp.getHeight() * imp.getNSlices();
+        boolean javaIndexingIssue = numElements > getMaximumArrayIndex();
+
         if( imp.getBitDepth() == 8 )
         {
-            byte[][] data = getByteData( imp, 0, 0 );
-
-            long numBytes = data.length * data[0].length;
-
-            boolean javaIndexingIssue =
-                    numBytes > ImarisUtils.getMaximumArrayIndex();
-
             if ( ! javaIndexingIssue )
             {
+                byte[] data = getByteData( imp, 0, 0 );
+
                 H5.H5Dwrite( dataset_id,
                         memory_type,
                         HDF5Constants.H5S_ALL,
@@ -178,11 +176,12 @@ public class H5DataCubeWriter
                         "=> saving 8-bit hdf5 plane-wise " +
                         "to circumvent java indexing issues." );
 
-                for ( int i = 0; i < imp.getNSlices(); ++i )
+                for ( int z = 0; z < imp.getNSlices(); ++z )
                 {
-                    byte[] slice = data[ i ];
+                    // TODO: maybe could make it work also with chunking now.
+                    byte[] slice = ( byte [] ) imp.getStack().getProcessor( z + 1 ).getPixels();
 
-                    long[] start = new long[]{ i, 0, 0 };
+                    long[] start = new long[]{ z, 0, 0 };
                     long[] count = new long[]{ 1, imp.getHeight(), imp.getWidth()};
 
                     dataspace_id = H5.H5Dget_space( dataset_id );
@@ -207,23 +206,15 @@ public class H5DataCubeWriter
                             dataspace_id,
                             HDF5Constants.H5P_DEFAULT,
                             slice );
-
                 }
-
             }
         }
         else if( imp.getBitDepth() == 16 )
         {
-            short[][] data = getShortData( imp, 0, 0 );
-
-            // Hdf5 will convert the short array to a byte array
-            // Thus it will need twice as many bytes as there are shorts
-            long numBytes = 2L * data.length * data[ 0 ].length;
-
-            boolean javaIndexingIssue = numBytes > getMaximumArrayIndex();
-
             if ( ! javaIndexingIssue )
             {
+                short[] data = getShortData( imp, 0, 0 );
+
                 H5.H5Dwrite( dataset_id,
                         memory_type,
                         HDF5Constants.H5S_ALL,
@@ -233,17 +224,21 @@ public class H5DataCubeWriter
             }
             else
             {
+                System.out.println( "Very large data set " +
+                        "=> saving 16-bit hdf5 plane-wise " +
+                        "to circumvent java indexing issues." );
+
                 final long dz = 1; //chunkXYZ[ 2 ];
 
                 for ( int z = 0; z < imp.getNSlices(); z += dz )
                 {
-
                     long nz = dz;
 
                     if ( z + nz >= imp.getNSlices() )
                         nz = ( imp.getNSlices() - z - 1  );
 
-                    short[] slice = data[ z ];
+                    // TODO: maybe could make it work also with chunking now.
+                    short[] slice = (short [] ) imp.getStack().getProcessor( z + 1 ).getPixels();
 
                     long[] start = new long[]{ z, 0, 0 };
                     long[] count = new long[]{
@@ -277,9 +272,7 @@ public class H5DataCubeWriter
                             HDF5Constants.H5P_DEFAULT,
                             slice );
                 }
-
             }
-
         }
         else if( imp.getBitDepth() == 32 )
         {
@@ -389,9 +382,8 @@ public class H5DataCubeWriter
         return ( H5Utils.createFile( directory, filename  ) );
     }
 
-    private byte[][] getByteData(ImagePlus imp, int c, int t )
+    private byte[] getByteData( ImagePlus imp, int c, int t )
     {
-
         ImageStack stack = imp.getStack();
 
         int[] size = new int[]{
@@ -400,21 +392,27 @@ public class H5DataCubeWriter
                 imp.getNSlices()
         };
 
-        byte[][] data = new byte[ size[2] ] [ size[1] * size[0] ];
 
+        byte[] data = new byte[ size[0] * size[1] * size[2] ];
+
+        // TODO: make copying multi-threaded
+
+        int dataArrayIndex = 0;
         for (int z = 0; z < imp.getNSlices(); z++)
         {
             int n = imp.getStackIndex(c+1, z+1, t+1);
-            data[ z ] = (byte[]) stack.getProcessor( n ).getPixels();
+
+            final byte[] pixels = ( byte[] ) stack.getProcessor( n ).getPixels();
+            System.arraycopy( pixels, 0, data, dataArrayIndex, pixels.length );
+            dataArrayIndex += pixels.length;
         }
 
         return ( data );
 
     }
 
-    private short[][] getShortData( ImagePlus imp, int c, int t )
+    private short[] getShortData( ImagePlus imp, int c, int t )
     {
-
         ImageStack stack = imp.getStack();
 
         int[] size = new int[]{
@@ -423,14 +421,19 @@ public class H5DataCubeWriter
                 imp.getNSlices()
         };
 
-        // TODO: it is really annoying that it needs to copy the data here...
-        // For an imglib2 ArrayImg this might not be necessary
-        short[][] data = new short[ size[2] ] [ size[1] * size[0] ];
 
+        short[] data = new short[ size[0] * size[1] * size[2] ];
+
+        // TODO: make copying multi-threaded
+
+        int dataArrayIndex = 0;
         for (int z = 0; z < imp.getNSlices(); z++)
         {
             int n = imp.getStackIndex(c+1, z+1, t+1);
-            data[ z ] = ( short[] ) stack.getProcessor( n ).getPixels();
+
+            final short[] pixels = ( short[] ) stack.getProcessor( n ).getPixels();
+            System.arraycopy( pixels, 0, data, dataArrayIndex, pixels.length );
+            dataArrayIndex += pixels.length;
         }
 
         return ( data );

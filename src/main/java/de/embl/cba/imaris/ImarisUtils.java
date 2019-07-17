@@ -108,22 +108,23 @@ public abstract class ImarisUtils {
         return nums;
     }
 
-    public static ImagePlus getDataCube( ImagePlus image, int c, int t, int[] binning )
+    public static ImagePlus getVolume( ImagePlus image, int c, int t, int[] binning )
     {
-        ImagePlus dataCube = new Duplicator().run(
+        ImagePlus volume = new Duplicator().run(
                 image, c + 1, c + 1, 1,
                 image.getNSlices(), t + 1, t + 1 );
 
         if ( binning[ 0 ] > 1 || binning[ 1 ] > 1 || binning[ 2 ] > 1 ){
             Binner binner = new Binner();
-            dataCube = binner.shrink(
-                    dataCube,
+            volume = binner.shrink(
+                    volume,
                     binning[0],
                     binning[1],
                     binning[2],
                     binner.AVERAGE );
         }
-        return dataCube;
+
+        return volume;
     }
 
 
