@@ -15,8 +15,8 @@ public class TestSaveImagePlus
 		final net.imagej.ImageJ ij = new net.imagej.ImageJ();
 		ij.ui().showUI();
 
-		final int sizeZ = 600; // set to 700 to test java indexing issues
-		final int sizeXY = 2048; // set to 2048 to test java indexing issues
+		final int sizeZ = 30; // set to 600 to test java indexing issues
+		final int sizeXY = 100; // set to 2048 to test java indexing issues
 		final ImageStack imageStack = new ImageStack( sizeXY, sizeXY, sizeZ );
 
 		for ( int i = 1; i <= sizeZ; i++ )
