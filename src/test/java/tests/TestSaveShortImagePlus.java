@@ -7,7 +7,9 @@ import ij.ImageStack;
 import ij.process.ShortProcessor;
 import org.junit.Test;
 
-public class TestSaveImagePlus
+import static tests.TestPathConstants.TEST_FOLDER;
+
+public class TestSaveShortImagePlus
 {
 	@Test
 	public void saveShortImagePlusAsImaris( )
@@ -33,7 +35,7 @@ public class TestSaveImagePlus
 		ImagePlus imp = new ImagePlus( "image", imageStack );
 		imp.setDimensions( 1, sizeZ, 1 );
 
-		ImarisWriter writer = new ImarisWriter( imp, "/Users/tischer/Desktop/tmp" );
+		ImarisWriter writer = new ImarisWriter( imp, TEST_FOLDER + "test-data" );
 
 		writer.setLogService( ij.log() );
 
@@ -43,7 +45,7 @@ public class TestSaveImagePlus
 
 	public static void main( String[] args )
 	{
-		new TestSaveImagePlus().saveShortImagePlusAsImaris();
+		new TestSaveShortImagePlus().saveShortImagePlusAsImaris();
 	}
 
 
