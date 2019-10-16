@@ -7,7 +7,7 @@ import ij.ImageStack;
 import ij.process.ShortProcessor;
 import org.junit.Test;
 
-import static tests.TestPathConstants.TEST_FOLDER;
+import static tests.TestConstants.TEST_FOLDER;
 
 public class TestSaveShortImagePlus
 {
@@ -15,7 +15,6 @@ public class TestSaveShortImagePlus
 	public void saveShortImagePlusAsImaris( )
 	{
 		final net.imagej.ImageJ ij = new net.imagej.ImageJ();
-		ij.ui().showUI();
 
 		final int sizeZ = 30; // set to 600 to test java indexing issues
 		final int sizeXY = 100; // set to 2048 to test java indexing issues
@@ -36,9 +35,7 @@ public class TestSaveShortImagePlus
 		imp.setDimensions( 1, sizeZ, 1 );
 
 		ImarisWriter writer = new ImarisWriter( imp, TEST_FOLDER + "test-data" );
-
 		writer.setLogService( ij.log() );
-
 		writer.write();
 	}
 
