@@ -38,8 +38,4 @@ public class TestSave16bitImagePlus
 	{
 		new TestSave16bitImagePlus().saveAsImaris();
 	}
-
-
-
-
 }

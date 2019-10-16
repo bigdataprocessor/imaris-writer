@@ -7,7 +7,7 @@
 		<version>0.3.9</version>
 	</parent>
 	<artifactId>imaris-writer</artifactId>
-	<version>0.2.0</version>
+	<version>0.2.1</version>
 	<name>imaris-writer</name>
 	<description>imaris-writer</description>
 	<inceptionYear>2018</inceptionYear>
