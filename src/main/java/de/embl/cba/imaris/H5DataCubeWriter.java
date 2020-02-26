@@ -72,7 +72,7 @@ public class H5DataCubeWriter
         {
             memory_type = HDF5Constants.H5T_NATIVE_USHORT;
 //            file_type = HDF5Constants.H5T_STD_U16BE; // BigEndian does not work
-            file_type = HDF5Constants.H5T_STD_U16LE;
+              file_type = HDF5Constants.H5T_STD_U16LE;
         }
         else if ( imp.getBitDepth() == 32 )
         {

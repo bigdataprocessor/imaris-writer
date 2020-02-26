@@ -9,6 +9,7 @@ import ij.ImagePlus;
 import mpicbg.spim.data.SpimDataException;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 
 public class TestSave16bitImagePlus
@@ -18,15 +19,18 @@ public class TestSave16bitImagePlus
 	{
 		final net.imagej.ImageJ ij = new net.imagej.ImageJ();
 
-		ImagePlus imp = IJ.openImage( TestConstants.TEST_FOLDER + "test-data/mri-stack-16bit.tif" );
+		final String fileName = "mri-stack-16bit";
+
+		ImagePlus imp = IJ.openImage( TestConstants.TEST_FOLDER + "test-data" + File.separator + fileName + ".tif" );
 		imp.setTitle( "mri-stack-16bit" );
 
-		ImarisWriter writer = new ImarisWriter( imp, TestConstants.TEST_FOLDER + "test-output" );
+		final String outputFolder = "test-output-little-endian";
 
+		ImarisWriter writer = new ImarisWriter( imp, TestConstants.TEST_FOLDER + outputFolder );
 		writer.setLogService( ij.log() );
 		writer.write();
 
-		final SpimDataMinimal spimDataMinimal = Imaris.openIms( TestConstants.TEST_FOLDER + "test-output/mri-stack-16bit-header.ims" );
+		final SpimDataMinimal spimDataMinimal = Imaris.openIms( TestConstants.TEST_FOLDER + outputFolder + File.separator + fileName + "-header.ims");
 
 		if ( TestConstants.interactive )
 			BdvFunctions.show( spimDataMinimal );

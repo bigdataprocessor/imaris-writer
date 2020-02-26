@@ -47,6 +47,9 @@ public class ImarisWriter {
 
     public void write()
     {
+        final File dir = new File( directory );
+        if ( ! dir.exists() ) dir.mkdirs();
+
         ImarisDataSet imarisDataSet = createImarisDataSet();
 
         ImarisWriter.writeHeaderFile(
@@ -80,7 +83,6 @@ public class ImarisWriter {
         if ( channelNames != null && channelNames.size() == imarisDataSet.getNumChannels() )
             imarisDataSet.setChannelNames( channelNames );
 
-
         return imarisDataSet;
     }
 
@@ -102,7 +104,6 @@ public class ImarisWriter {
 
     public static void writeCombinedHeaderFile( ArrayList < File > masterFiles, String filename )
     {
-
         ImarisDataSet imarisDataSet = new ImarisDataSet( masterFiles.get( 0 ) );
 
         for ( int f = 1; f < masterFiles.size(); ++f )
@@ -111,7 +112,6 @@ public class ImarisWriter {
         }
 
         writeHeaderFile( imarisDataSet, masterFiles.get( 0 ).getParent(), filename );
-
     }
 
 
