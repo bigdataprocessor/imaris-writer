@@ -1,3 +1,5 @@
+[![](https://travis-ci.com/tischi/imaris-writer.svg?branch=master)](https://travis-ci.com/tischi/imaris-writer)
+
 # imaris-writer
 
 Java code for saving 3D multi-channel movies into a multi-resolution Imaris compatible hdf5 format. 
