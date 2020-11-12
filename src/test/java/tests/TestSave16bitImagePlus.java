@@ -10,7 +10,6 @@ import ij.ImagePlus;
 import ij.process.LUT;
 import mpicbg.spim.data.SpimDataException;
 import org.junit.Test;
-import org.scijava.log.LogService;
 
 import java.awt.*;
 import java.io.File;
@@ -19,7 +18,7 @@ import java.io.IOException;
 public class TestSave16bitImagePlus
 {
 	@Test
-	public void saveAsImaris() throws SpimDataException, IOException
+	public void run() throws SpimDataException, IOException
 	{
 		final String fileName = "mri-stack-16bit";
 
@@ -40,10 +39,9 @@ public class TestSave16bitImagePlus
 			BdvFunctions.show( spimDataMinimal );
 	}
 
-
 	public static void main( String[] args ) throws SpimDataException, IOException
 	{
 		TestConstants.interactive = true;
-		new TestSave16bitImagePlus().saveAsImaris();
+		new TestSave16bitImagePlus().run();
 	}
 }

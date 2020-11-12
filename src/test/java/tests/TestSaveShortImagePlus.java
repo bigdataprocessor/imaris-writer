@@ -12,10 +12,8 @@ import static tests.TestConstants.TEST_FOLDER;
 public class TestSaveShortImagePlus
 {
 	@Test
-	public void saveShortImagePlusAsImaris( )
+	public void run( )
 	{
-		final net.imagej.ImageJ ij = new net.imagej.ImageJ();
-
 		final int sizeZ = 30; // set to 600 to test java indexing issues
 		final int sizeXY = 100; // set to 2048 to test java indexing issues
 		final ImageStack imageStack = new ImageStack( sizeXY, sizeXY, sizeZ );
@@ -30,19 +28,16 @@ public class TestSaveShortImagePlus
 						ip.set( x, y, x );
 		}
 
-
 		ImagePlus imp = new ImagePlus( "image", imageStack );
 		imp.setDimensions( 1, sizeZ, 1 );
 
 		ImarisWriter writer = new ImarisWriter( imp, TEST_FOLDER + "test-data" );
-		writer.setLogService( ij.log() );
 		writer.write();
 	}
 
-
 	public static void main( String[] args )
 	{
-		new TestSaveShortImagePlus().saveShortImagePlusAsImaris();
+		new TestSaveShortImagePlus().run();
 	}
 
 }
