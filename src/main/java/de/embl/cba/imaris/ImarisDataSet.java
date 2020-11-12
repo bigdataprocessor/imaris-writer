@@ -28,8 +28,6 @@
  */
 package de.embl.cba.imaris;
 
-import de.embl.cba.logging.IJLazySwingLogger;
-import de.embl.cba.logging.Logger;
 import ij.CompositeImage;
 import ij.IJ;
 import ij.ImagePlus;
@@ -40,7 +38,6 @@ import net.imglib2.RealInterval;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
-
 
 public class ImarisDataSet {
 
@@ -53,8 +50,6 @@ public class ImarisDataSet {
     private RealInterval interval;
     private CTRDataSets ctrDataSets;
     private ArrayList < String > timePoints;
-
-    Logger logger = new IJLazySwingLogger();
 
     // Trying to make blocks of about 8000 voxels in size (8-bit)
     // Because I read somewhere that the OS reads often anyway in blocks of around 8000 bytes...
@@ -177,11 +172,6 @@ public class ImarisDataSet {
     public ArrayList< long[] > getChunks()
     {
         return chunks;
-    }
-
-    public void setLogger( Logger logger )
-    {
-        this.logger = logger;
     }
 
     private long[] getImageSize(ImagePlus imp, int[] primaryBinning )
