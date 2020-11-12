@@ -88,7 +88,6 @@ public class ImarisWriter {
 
     private void log( String text )
     {
-
         IJ.log( text );
 
         if ( logService != null )
@@ -141,7 +140,6 @@ public class ImarisWriter {
         H5Utils.writeStringAttribute( file_id, "ThumbnailDirectoryName", "Thumbnail");
     }
 
-
     private static void setExternalDataSets( int file_id, ImarisDataSet idp)
     {
         for ( int t = 0; t < idp.getTimePoints().size(); ++t )
@@ -174,7 +172,6 @@ public class ImarisWriter {
         }
 
     }
-
 
     private static void setImageInfos( int file_id,
                                        ArrayList< long [] > dimensions,
@@ -214,9 +211,7 @@ public class ImarisWriter {
             }
         }
 
-
         H5.H5Gclose( group_id );
-
     }
 
     private static void setTimeInfos( int file_id, ArrayList < String > times)
@@ -247,16 +242,15 @@ public class ImarisWriter {
         int group_id = H5Utils.createGroup( file_id,
                 ImarisUtils.DATA_SET_INFO + "/" + ImarisUtils.CHANNEL + c );
 
-        H5Utils.writeStringAttribute(group_id,
-                "ColorMode", "BaseColor");
+        H5Utils.writeStringAttribute(group_id, "ColorMode", "BaseColor");
 
-        H5Utils.writeStringAttribute(group_id,
-                "ColorOpacity", "1");
+        H5Utils.writeStringAttribute(group_id, "ColorOpacity", "1");
 
-        H5Utils.writeStringAttribute(group_id, "Name", imarisDataSet.getChannelNames().get( c ) );
+        H5Utils.writeStringAttribute(group_id, ImarisUtils.CHANNEL_NAME, imarisDataSet.getChannelNames().get( c ) );
 
-        H5Utils.writeStringAttribute(group_id, "Color", imarisDataSet.getChannelColors().get( c ) );
+        H5Utils.writeStringAttribute(group_id, ImarisUtils.CHANNEL_COLOR, imarisDataSet.getChannelColors().get( c ) );
 
+        H5Utils.writeStringAttribute(group_id, ImarisUtils.CHANNEL_COLOR_RANGE, imarisDataSet.getChannelRanges().get( c ) );
 
         H5.H5Gclose( group_id );
     }

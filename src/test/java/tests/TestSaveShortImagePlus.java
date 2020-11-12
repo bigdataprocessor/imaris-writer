@@ -45,5 +45,4 @@ public class TestSaveShortImagePlus
 		new TestSaveShortImagePlus().saveShortImagePlusAsImaris();
 	}
 
-
 }

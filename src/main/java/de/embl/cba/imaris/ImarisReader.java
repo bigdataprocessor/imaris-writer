@@ -19,7 +19,7 @@ public class ImarisReader {
         H5.H5Fclose( file_id );
     }
 
-    public ArrayList< String > getChannelColors( )
+    public ArrayList< String > readChannelColors( )
     {
         ArrayList < String > channelColors = new ArrayList<>();
 
@@ -40,7 +40,7 @@ public class ImarisReader {
         return ( channelColors ) ;
     }
 
-    public ArrayList< String > getChannelNames( )
+    public ArrayList< String > readChannelNames( )
     {
         ArrayList < String > channelNames = new ArrayList<>();
 
@@ -61,28 +61,47 @@ public class ImarisReader {
         return ( channelNames ) ;
     }
 
-    public ArrayList< String > getTimePoints( )
+    public ArrayList< String > readChannelRanges( )
+    {
+        ArrayList < String > channelRanges = new ArrayList<>();
+
+        for ( int c = 0; ; ++c )
+        {
+
+            String color = H5Utils.readStringAttribute( file_id,
+                    ImarisUtils.DATA_SET_INFO
+                            + "/" + ImarisUtils.CHANNEL + c,
+                            ImarisUtils.CHANNEL_COLOR_RANGE );
+
+            if ( color == null ) break;
+
+            channelRanges.add( color );
+
+        }
+
+        return ( channelRanges ) ;
+    }
+
+    public ArrayList< String > readTimePoints( )
     {
         ArrayList < String > timePoints = new ArrayList<>();
 
         for ( int t = 0; ; ++t )
         {
-
             String timePoint = H5Utils.readStringAttribute( file_id,
                     ImarisUtils.DATA_SET_INFO
                     + "/" + ImarisUtils.TIME_INFO ,
-                    ImarisUtils.TIME_POINT_ATTRIBUTE + (t+1) );
+                    ImarisUtils.TIME_POINT + (t+1) );
 
             if ( timePoint == null ) break;
 
             timePoints.add( timePoint );
-
         }
 
         return ( timePoints ) ;
     }
 
-    public ArrayList< long[] > getDimensions( )
+    public ArrayList< long[] > readDimensions( )
     {
         ArrayList < long[] > dimensions = new ArrayList<>();
 
@@ -127,7 +146,7 @@ public class ImarisReader {
         return ( dimensions ) ;
     }
 
-    public FinalRealInterval getCalibratedInterval()
+    public FinalRealInterval readCalibratedInterval()
     {
 
         double[] min = new double[ 3 ];
@@ -149,46 +168,6 @@ public class ImarisReader {
 
         return ( interval ) ;
     }
-
-    /*
-    public ArrayList< ArrayList < String[] > > readDataSets( int nr, int nc, int nt )
-    {
-        ArrayList< ArrayList < String[] > > dataSets = new ArrayList<>();
-
-        for ( int r = 0; r < nr  ; ++r )
-        {
-            for ( int c = 0; c < nc; ++c )
-            {
-                ArrayList < String[] > timePoints = new ArrayList<>();
-
-                for ( int t = 0; t < nt; ++t )
-                {
-                    String[] dataSet = new String[3];
-                    timePoints.add( dataSet );
-                }
-            }
-        }
-
-            for ( int t )
-            String dataSetName = DATA_SET
-                    + RESOLUTION_LEVEL + r
-                    + TIME_POINT + 0
-                    + CHANNEL + 0
-                    + DATA;
-
-            long[] dimension = getDataDimensions( file_id, dataSetName );
-
-            if ( dimension == null ) break;
-
-            dimensions.add( dimension );
-        }
-
-        return ( dimensions ) ;
-    }
-    */
-
-
-
 }
 
 

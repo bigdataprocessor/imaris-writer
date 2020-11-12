@@ -2,12 +2,14 @@ package de.embl.cba.imaris;
 
 import de.embl.cba.logging.IJLazySwingLogger;
 import de.embl.cba.logging.Logger;
+import ij.CompositeImage;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.measure.Calibration;
 import net.imglib2.FinalRealInterval;
 import net.imglib2.RealInterval;
 
+import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -18,6 +20,7 @@ public class ImarisDataSet {
     private ArrayList < int[] > relativeBinnings;
     private ArrayList < long[] > chunks;
     private ArrayList < String > channelColors;
+    private ArrayList < String > channelRanges;
     private ArrayList < String > channelNames;
     private RealInterval interval;
     private CTRDataSets ctrDataSets;
@@ -70,11 +73,12 @@ public class ImarisDataSet {
     {
         ImarisReader reader = new ImarisReader( directory, filename );
 
-        channelColors = reader.getChannelColors();
-        channelNames = reader.getChannelNames();
-        timePoints = reader.getTimePoints();
-        dimensions = reader.getDimensions();
-        interval = reader.getCalibratedInterval();
+        channelColors = reader.readChannelColors();
+        channelNames = reader.readChannelNames();
+        channelRanges =  reader.readChannelRanges();
+        timePoints = reader.readTimePoints();
+        dimensions = reader.readDimensions();
+        interval = reader.readCalibratedInterval();
 
         ctrDataSets = new CTRDataSets();
 
@@ -154,34 +158,10 @@ public class ImarisDataSet {
 
     private long[] getImageSize(ImagePlus imp, int[] primaryBinning )
     {
-
         long[] size = new long[3];
 
-        // bin image to see how large it would be
         if ( primaryBinning[0] > 1 || primaryBinning[1] > 1 || primaryBinning[2] > 1 )
         {
-
-            /*
-            logger.info("Determining image size at " +
-                    "highest resolution level after initial binning...");
-
-            ImagePlus impBinned = null;
-            if ( ! ( imp.getStack() instanceof VirtualStackOfStacks) )
-            {
-                logger.error( "This currently only works for streamed data." );
-                return null;
-            }
-            VirtualStackOfStacks vss = (VirtualStackOfStacks) imp.getStack();
-            impBinned = vss.getFullFrame( 0, 0, 1 );
-
-            Binner binner = new Binner();
-            impBinned = binner.shrink( impBinned, primaryBinning[0], primaryBinning[1], primaryBinning[2], binner.AVERAGE );
-            size[0] = impBinned.getWidth();
-            size[1] = impBinned.getHeight();
-            size[2] = impBinned.getNSlices();
-
-            */
-
             size[0] = imp.getWidth();
             size[1] = imp.getHeight();
             size[2] = imp.getNSlices();
@@ -351,11 +331,25 @@ public class ImarisDataSet {
     {
         channelColors = new ArrayList<>();
         channelNames = new ArrayList<>();
+        channelRanges = new ArrayList<>();
 
         for ( int c = 0; c < imp.getNChannels(); ++c )
         {
-            channelColors.add( ImarisUtils.DEFAULT_COLOR );
-            channelNames.add( "channel_" + c );
+            if ( imp instanceof CompositeImage )
+            {
+                CompositeImage compositeImage = ( CompositeImage ) imp;
+                compositeImage.setC( c + 1 );
+                Color color = compositeImage.getChannelColor();
+                channelColors.add( "" + color.getRed() / 255.0 + " " + color.getGreen() / 255.0 + " " + color.getBlue() / 255.0 );
+                channelRanges.add( "" + compositeImage.getDisplayRangeMin() + " " +  compositeImage.getDisplayRangeMax() );
+                channelNames.add( "channel_" + c );
+            }
+            else
+            {
+                channelColors.add( ImarisUtils.DEFAULT_COLOR );
+                channelRanges.add( "" + imp.getDisplayRangeMin() + " " +  imp.getDisplayRangeMax() );
+                channelNames.add( "channel_" + c );
+            }
         }
     }
 
@@ -387,10 +381,6 @@ public class ImarisDataSet {
         interval = new FinalRealInterval( min, max );
     }
 
-
-
-
-
     public void addChannelsFromImaris( File file )
     {
         addChannelsFromImaris( file.getParent(), file.getName() );
@@ -400,16 +390,17 @@ public class ImarisDataSet {
     {
         ImarisReader reader = new ImarisReader( directory, filename );
 
-        int nc = reader.getChannelColors().size();
-        int nt = reader.getTimePoints().size();
-        int nr = reader.getDimensions().size();
+        int nc = reader.readChannelColors().size();
+        int nt = reader.readTimePoints().size();
+        int nr = reader.readDimensions().size();
 
         int currentNumChannelsInMetaFile = channelColors.size();
 
         for ( int c = 0; c < nc; ++c )
         {
-            channelColors.add( reader.getChannelColors().get( c ) );
-            channelNames.add( reader.getChannelNames().get( c ) );
+            channelColors.add( reader.readChannelColors().get( c ) );
+            channelNames.add( reader.readChannelNames().get( c ) );
+            channelRanges.add( reader.readChannelRanges().get( c ) );
 
             for ( int t = 0; t < nt; ++t )
             {
@@ -419,7 +410,10 @@ public class ImarisDataSet {
                 }
             }
         }
-
     }
 
+    public ArrayList< String > getChannelRanges()
+    {
+        return channelRanges;
+    }
 }

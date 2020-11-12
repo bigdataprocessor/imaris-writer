@@ -17,8 +17,8 @@ public abstract class ImarisUtils {
     public final static String DATA = "Data";
     public final static String TIME_INFO = "TimeInfo";
     public final static String CHANNEL = "Channel ";
+
     public final static String TIME_POINT = "TimePoint ";
-    public final static String TIME_POINT_ATTRIBUTE = "TimePoint";
     public final static String HISTOGRAM = "Histogram";
     public final static String IMAGE_SIZE = "ImageSize";
     public final static String IMAGE_BLOCK_SIZE = "ImageBlockSize";
@@ -26,6 +26,8 @@ public abstract class ImarisUtils {
     public final static String[] XYZ = new String[]{"X","Y","Z"};
     public final static String DATA_SET_INFO = "DataSetInfo";
     public final static String CHANNEL_COLOR = "Color";
+    public final static String CHANNEL_COLOR_RANGE = "ColorRange";
+
     public final static String CHANNEL_NAME = "Name";
     public final static String DEFAULT_COLOR = "1.000 1.000 1.000";
     public final static String RESOLUTION_LEVELS_ATTRIBUTE = "ResolutionLevels";
