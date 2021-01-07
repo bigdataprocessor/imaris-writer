@@ -131,7 +131,6 @@ public class ImarisWriter {
 
     public static void writeHeaderFile( ImarisDataSet ids, String directory, String filename )
     {
-
         int file_id = H5Utils.createFile( directory, filename );
 
         setHeader( file_id );
@@ -190,7 +189,6 @@ public class ImarisWriter {
                                        RealInterval interval,
                                        int numChannels )
     {
-
         int group_id = H5Utils.createGroup( file_id, ImarisUtils.DATA_SET_INFO + "/" +  ImarisUtils.IMAGE );
 
         // set attributes
@@ -228,7 +226,6 @@ public class ImarisWriter {
 
     private static void setTimeInfos( int file_id, ArrayList < String > times)
     {
-
         int group_id = H5Utils.createGroup( file_id, ImarisUtils.DATA_SET_INFO + "/" + ImarisUtils.TIME_INFO );
 
         // Set attributes
@@ -250,7 +247,6 @@ public class ImarisWriter {
 
     private static void setChannelInfos( int file_id, int c, ImarisDataSet ids )
     {
-
         int group_id = H5Utils.createGroup( file_id, ImarisUtils.DATA_SET_INFO + "/" + ImarisUtils.CHANNEL + c );
 
         H5Utils.writeStringAttribute(group_id, "ColorMode", "BaseColor");
