@@ -32,12 +32,16 @@ import ij.CompositeImage;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.measure.Calibration;
+import ij.process.LUT;
 import net.imglib2.FinalRealInterval;
 import net.imglib2.RealInterval;
 
 import java.awt.*;
+import java.awt.image.IndexColorModel;
 import java.io.File;
 import java.util.ArrayList;
+
+import static ij.CompositeImage.GRAYSCALE;
 
 public class ImarisDataSet {
 
@@ -356,9 +360,29 @@ public class ImarisDataSet {
             if ( imp instanceof CompositeImage )
             {
                 CompositeImage compositeImage = ( CompositeImage ) imp;
-                compositeImage.setC( c + 1 );
-                Color color = compositeImage.getChannelColor();
-                channelColors.add( "" + color.getRed() / 255.0 + " " + color.getGreen() / 255.0 + " " + color.getBlue() / 255.0 );
+				LUT channelLut = compositeImage.getChannelLut( c + 1 );
+				int mode = compositeImage.getMode();
+				if ( channelLut == null || mode == GRAYSCALE )
+				{
+					channelColors.add( ImarisUtils.DEFAULT_COLOR );
+				}
+				else
+				{
+					IndexColorModel cm = channelLut.getColorModel();
+					if ( cm == null )
+					{
+						channelColors.add( ImarisUtils.DEFAULT_COLOR );
+					}
+					else
+					{
+						int i = cm.getMapSize() - 1;
+						String color = "" + cm.getRed( i ) / 255.0 + " " + cm.getGreen( i ) / 255.0 + " " + cm.getBlue( i ) / 255.0;
+						channelColors.add( color );
+					}
+
+				}
+
+				compositeImage.setC( c + 1 );
                 channelRanges.add( "" + compositeImage.getDisplayRangeMin() + " " +  compositeImage.getDisplayRangeMax() );
                 channelNames.add( "channel_" + c );
             }

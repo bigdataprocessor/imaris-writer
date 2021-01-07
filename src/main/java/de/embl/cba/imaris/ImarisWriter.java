@@ -34,7 +34,6 @@ import ij.ImagePlus;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import net.imglib2.RealInterval;
-import org.scijava.log.LogService;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -48,7 +47,6 @@ public class ImarisWriter {
     final String name;
     int[] binning;
     ArrayList< String > channelNames;
-    LogService logService;
 
     public ImarisWriter( ImagePlus imp, String directory )
     {
@@ -56,16 +54,6 @@ public class ImarisWriter {
         this.name = imp.getTitle();
         this.directory = directory;
         this.binning = new int[]{ 1, 1, 1 };
-    }
-
-//    public void setBinning( int[] binning )
-//    {
-//        this.binning = binning;
-//    }
-
-    public void setLogService( LogService logService )
-    {
-        this.logService = logService;
     }
 
     public void setChannelNames( ArrayList< String > channelNames )
@@ -78,13 +66,19 @@ public class ImarisWriter {
         final File dir = new File( directory );
         if ( ! dir.exists() ) dir.mkdirs();
 
-        ImarisDataSet imarisDataSet = createImarisDataSet();
+        ImarisDataSet ids = createImarisDataSet();
 
-        ImarisWriter.writeHeaderFile(
-                imarisDataSet,
-                directory,
-                name + "-header" + ".ims" );
+        // create .ims header file that links into below data cubes
+        writeHeaderFile( ids, directory, name + "-header" + ".ims" );
 
+        // create data cubes (volumes), containing the data, one file per channel and timepoint
+        writeDataCubes( ids );
+
+        log( "...done!" );
+    }
+
+    private void writeDataCubes( ImarisDataSet ids )
+    {
         H5DataCubeWriter writer = new H5DataCubeWriter();
 
         for ( int t = 0; t < imp.getNFrames(); ++t )
@@ -97,11 +91,9 @@ public class ImarisWriter {
                         ", time-point: " + ( t + 1 ) +
                         ", channel: " + ( c + 1 ) + " ..." );
 
-                writer.writeImarisCompatibleResolutionPyramid( volume, imarisDataSet, c, t );
+                writer.writeImarisCompatibleResolutionPyramid( volume, ids, c, t );
             }
         }
-
-        log( "...done!" );
     }
 
     private ImarisDataSet createImarisDataSet()
@@ -117,43 +109,36 @@ public class ImarisWriter {
     private void log( String text )
     {
         IJ.log( text );
-
-        if ( logService != null )
-        {
-            logService.info( text );
-        }
-        else
-        {
-            System.out.println( text );
-        }
-
     }
 
-    public static void writeCombinedHeaderFile( ArrayList < File > masterFiles, String filename )
+    /**
+     * Write a meta ims header file, combining the channels from multiple .ims files
+     *
+     * @param headerFiles
+     * @param filename
+     */
+    public static void writeCombinedHeaderFile( ArrayList< File > headerFiles, String filename )
     {
-        ImarisDataSet imarisDataSet = new ImarisDataSet( masterFiles.get( 0 ) );
+        ImarisDataSet imarisDataSet = new ImarisDataSet( headerFiles.get( 0 ) );
 
-        for ( int f = 1; f < masterFiles.size(); ++f )
+        for ( int f = 1; f < headerFiles.size(); ++f )
         {
-            imarisDataSet.addChannelsFromImaris( masterFiles.get( f ) );
+            imarisDataSet.addChannelsFromImaris( headerFiles.get( f ) );
         }
 
-        writeHeaderFile( imarisDataSet, masterFiles.get( 0 ).getParent(), filename );
+        writeHeaderFile( imarisDataSet, headerFiles.get( 0 ).getParent(), filename );
     }
 
-
-    public static void writeHeaderFile( ImarisDataSet idp,
-                                        String directory,
-                                        String filename )
+    public static void writeHeaderFile( ImarisDataSet ids, String directory, String filename )
     {
 
         int file_id = H5Utils.createFile( directory, filename );
 
         setHeader( file_id );
-        setImageInfos( file_id, idp.getDimensions(), idp.getInterval(), idp.getNumChannels() );
-        setTimeInfos( file_id, idp.getTimePoints() );
-        setChannelsInfos( file_id, idp  );
-        setExternalDataSets( file_id, idp );
+        setImageInfos( file_id, ids.getDimensions(), ids.getInterval(), ids.getNumChannels() );
+        setTimeInfos( file_id, ids.getTimePoints() );
+        setChannelsInfos( file_id, ids  );
+        setExternalDataSets( file_id, ids );
 
         H5.H5Fclose(file_id);
     }
@@ -168,21 +153,21 @@ public class ImarisWriter {
         H5Utils.writeStringAttribute( file_id, "ThumbnailDirectoryName", "Thumbnail");
     }
 
-    private static void setExternalDataSets( int file_id, ImarisDataSet idp)
+    private static void setExternalDataSets( int file_id, ImarisDataSet ids)
     {
-        for ( int t = 0; t < idp.getTimePoints().size(); ++t )
+        for ( int t = 0; t < ids.getTimePoints().size(); ++t )
         {
-            for ( int c = 0; c < idp.getChannelColors().size(); ++c )
+            for ( int c = 0; c < ids.getChannelColors().size(); ++c )
             {
-                setExternalDataSet( file_id, c, t, idp );
+                setExternalDataSet( file_id, c, t, ids );
             }
         }
     }
 
-    private static void setExternalDataSet( int file_id, int c, int t, ImarisDataSet imarisDataSet )
+    private static void setExternalDataSet( int file_id, int c, int t, ImarisDataSet ids )
     {
 
-        for (int r = 0; r < imarisDataSet.getDimensions().size(); ++r )
+        for (int r = 0; r < ids.getDimensions().size(); ++r )
         {
             int group_id = H5Utils.createGroup( file_id,
                     ImarisUtils.DATA_SET
@@ -190,15 +175,14 @@ public class ImarisWriter {
                             + "/" + ImarisUtils.TIME_POINT + t );
 
             H5.H5Lcreate_external(
-                    "./" + imarisDataSet.getDataSetFilename( c, t, r ),
-                    imarisDataSet.getDataSetGroupName( c, t, r ),
+                    "./" + ids.getDataSetFilename( c, t, r ),
+                    ids.getDataSetGroupName( c, t, r ),
                     group_id,
                     ImarisUtils.CHANNEL + c,
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT );
 
             H5.H5Gclose( group_id );
         }
-
     }
 
     private static void setImageInfos( int file_id,
@@ -264,30 +248,29 @@ public class ImarisWriter {
 
     }
 
-    private static void setChannelInfos( int file_id, int c, ImarisDataSet imarisDataSet )
+    private static void setChannelInfos( int file_id, int c, ImarisDataSet ids )
     {
 
-        int group_id = H5Utils.createGroup( file_id,
-                ImarisUtils.DATA_SET_INFO + "/" + ImarisUtils.CHANNEL + c );
+        int group_id = H5Utils.createGroup( file_id, ImarisUtils.DATA_SET_INFO + "/" + ImarisUtils.CHANNEL + c );
 
         H5Utils.writeStringAttribute(group_id, "ColorMode", "BaseColor");
 
         H5Utils.writeStringAttribute(group_id, "ColorOpacity", "1");
 
-        H5Utils.writeStringAttribute(group_id, ImarisUtils.CHANNEL_NAME, imarisDataSet.getChannelNames().get( c ) );
+        H5Utils.writeStringAttribute(group_id, ImarisUtils.CHANNEL_NAME, ids.getChannelNames().get( c ) );
 
-        H5Utils.writeStringAttribute(group_id, ImarisUtils.CHANNEL_COLOR, imarisDataSet.getChannelColors().get( c ) );
+        H5Utils.writeStringAttribute(group_id, ImarisUtils.CHANNEL_COLOR, ids.getChannelColors().get( c ) );
 
-        H5Utils.writeStringAttribute(group_id, ImarisUtils.CHANNEL_COLOR_RANGE, imarisDataSet.getChannelRanges().get( c ) );
+        H5Utils.writeStringAttribute(group_id, ImarisUtils.CHANNEL_COLOR_RANGE, ids.getChannelRanges().get( c ) );
 
         H5.H5Gclose( group_id );
     }
 
-    private static void setChannelsInfos( int file_id, ImarisDataSet imarisDataSet )
+    private static void setChannelsInfos( int file_id, ImarisDataSet ids )
     {
-        for ( int c = 0; c < imarisDataSet.getChannelNames().size(); ++c )
+        for ( int c = 0; c < ids.getChannelNames().size(); ++c )
         {
-            setChannelInfos( file_id, c, imarisDataSet );
+            setChannelInfos( file_id, c, ids );
         }
     }
 
