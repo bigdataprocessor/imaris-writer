@@ -205,14 +205,11 @@ public class ImarisDataSet {
 
     }
 
-    private void setDimensionsBinningsChunks(ImagePlus imp, int[] primaryBinning )
+    private void setDimensionsBinningsChunks( ImagePlus imp, int[] primaryBinning )
     {
-
         dimensions = new ArrayList<>();
         relativeBinnings = new ArrayList<>();
         chunks = new ArrayList<>();
-
-        int impByteDepth = imp.getBitDepth() / 8;
 
         long[] initialChunks = new long[]{
                 CHUNKING_XY_HIGHEST_RESOLUTION,
@@ -240,7 +237,6 @@ public class ImarisDataSet {
             }
             else
             {
-
                 long[] lastDimensions = dimensions.get( iResolution - 1 );
                 long lastVolume = lastDimensions[ 0 ]
                         * lastDimensions[ 1 ] * lastDimensions[ 2 ];
@@ -272,11 +268,7 @@ public class ImarisDataSet {
             {
                 break;
             }
-
         }
-
-        int a = 1; // debug
-
     }
 
     private void setDimensionsAndBinningsForThisResolutionLayer(
@@ -360,7 +352,7 @@ public class ImarisDataSet {
             if ( imp instanceof CompositeImage )
             {
                 CompositeImage compositeImage = ( CompositeImage ) imp;
-				LUT channelLut = compositeImage.getChannelLut( c + 1 );
+                LUT channelLut = compositeImage.getChannelLut( c + 1 );
 				int mode = compositeImage.getMode();
 				if ( channelLut == null || mode == GRAYSCALE )
 				{
@@ -384,14 +376,13 @@ public class ImarisDataSet {
 
 				compositeImage.setC( c + 1 );
                 channelRanges.add( "" + compositeImage.getDisplayRangeMin() + " " +  compositeImage.getDisplayRangeMax() );
-                channelNames.add( "channel_" + c );
             }
             else
             {
                 channelColors.add( ImarisUtils.DEFAULT_COLOR );
                 channelRanges.add( "" + imp.getDisplayRangeMin() + " " +  imp.getDisplayRangeMax() );
-                channelNames.add( "channel_" + c );
             }
+            channelNames.add( "channel_" + c );
         }
     }
 

@@ -390,7 +390,6 @@ public class H5DataCubeWriter
                 HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
                 HDF5Constants.H5P_DEFAULT, histogram);
 
-
         writeStringAttribute( group_id,
                 HISTOGRAM + "Min",
                 String.valueOf( imageStatistics.min ) );
