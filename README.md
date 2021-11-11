@@ -79,7 +79,7 @@ which will open them as a 5D `CachedCellImage`, i.e. a lazy-loading data structu
 </dependency>
 ```
 
-`import ncsa.hdf.hdf5lib.*`
+`import hdf.hdf5lib.*`
 
 As far as we know, this is the most core hdf5 library and should contain all functionality. We also explored the higher level `ch.systemsx.cisd.hdf5` library, but certain functionality, such as `filters` did not seem to be available.
 

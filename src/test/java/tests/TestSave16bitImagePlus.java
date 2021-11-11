@@ -46,7 +46,7 @@ import java.io.IOException;
 public class TestSave16bitImagePlus
 {
 	@Test
-	public void run() throws SpimDataException, IOException
+	public void run() throws IOException
 	{
 		final String fileName = "mri-stack-16bit";
 
