@@ -31,8 +31,8 @@ package de.embl.cba.imaris;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ncsa.hdf.hdf5lib.H5;
-import ncsa.hdf.hdf5lib.HDF5Constants;
+import hdf.hdf5lib.H5;
+import hdf.hdf5lib.HDF5Constants;
 import net.imglib2.RealInterval;
 
 import java.io.File;
@@ -131,7 +131,7 @@ public class ImarisWriter {
 
     public static void writeHeaderFile( ImarisDataSet ids, String directory, String filename )
     {
-        int file_id = H5Utils.createFile( directory, filename );
+        long file_id = H5Utils.createFile( directory, filename );
 
         setHeader( file_id );
         setImageInfos( file_id, ids.getDimensions(), ids.getInterval(), ids.getNumChannels() );
@@ -142,7 +142,7 @@ public class ImarisWriter {
         H5.H5Fclose(file_id);
     }
 
-    private static void setHeader( int file_id )
+    private static void setHeader( long file_id )
     {
         H5Utils.writeStringAttribute( file_id, "DataSetDirectoryName", ImarisUtils.DATA_SET );
         H5Utils.writeStringAttribute( file_id, "DataSetInfoDirectoryName", ImarisUtils.DATA_SET_INFO );
@@ -152,7 +152,7 @@ public class ImarisWriter {
         H5Utils.writeStringAttribute( file_id, "ThumbnailDirectoryName", "Thumbnail");
     }
 
-    private static void setExternalDataSets( int file_id, ImarisDataSet ids)
+    private static void setExternalDataSets( long file_id, ImarisDataSet ids)
     {
         for ( int t = 0; t < ids.getTimePoints().size(); ++t )
         {
@@ -163,12 +163,12 @@ public class ImarisWriter {
         }
     }
 
-    private static void setExternalDataSet( int file_id, int c, int t, ImarisDataSet ids )
+    private static void setExternalDataSet( long file_id, int c, int t, ImarisDataSet ids )
     {
 
         for (int r = 0; r < ids.getDimensions().size(); ++r )
         {
-            int group_id = H5Utils.createGroup( file_id,
+            long group_id = H5Utils.createGroup( file_id,
                     ImarisUtils.DATA_SET
                             + "/" + ImarisUtils.RESOLUTION_LEVEL + r
                             + "/" + ImarisUtils.TIME_POINT + t );
@@ -184,12 +184,12 @@ public class ImarisWriter {
         }
     }
 
-    private static void setImageInfos( int file_id,
+    private static void setImageInfos( long file_id,
                                        ArrayList< long [] > dimensions,
                                        RealInterval interval,
                                        int numChannels )
     {
-        int group_id = H5Utils.createGroup( file_id, ImarisUtils.DATA_SET_INFO + "/" +  ImarisUtils.IMAGE );
+        long group_id = H5Utils.createGroup( file_id, ImarisUtils.DATA_SET_INFO + "/" +  ImarisUtils.IMAGE );
 
         // set attributes
         //
@@ -224,9 +224,9 @@ public class ImarisWriter {
         H5.H5Gclose( group_id );
     }
 
-    private static void setTimeInfos( int file_id, ArrayList < String > times)
+    private static void setTimeInfos( long file_id, ArrayList < String > times)
     {
-        int group_id = H5Utils.createGroup( file_id, ImarisUtils.DATA_SET_INFO + "/" + ImarisUtils.TIME_INFO );
+        long group_id = H5Utils.createGroup( file_id, ImarisUtils.DATA_SET_INFO + "/" + ImarisUtils.TIME_INFO );
 
         // Set attributes
         //
@@ -245,9 +245,9 @@ public class ImarisWriter {
 
     }
 
-    private static void setChannelInfos( int file_id, int c, ImarisDataSet ids )
+    private static void setChannelInfos( long file_id, int c, ImarisDataSet ids )
     {
-        int group_id = H5Utils.createGroup( file_id, ImarisUtils.DATA_SET_INFO + "/" + ImarisUtils.CHANNEL + c );
+        long group_id = H5Utils.createGroup( file_id, ImarisUtils.DATA_SET_INFO + "/" + ImarisUtils.CHANNEL + c );
 
         H5Utils.writeStringAttribute(group_id, "ColorMode", "BaseColor");
 
@@ -262,7 +262,7 @@ public class ImarisWriter {
         H5.H5Gclose( group_id );
     }
 
-    private static void setChannelsInfos( int file_id, ImarisDataSet ids )
+    private static void setChannelsInfos( long file_id, ImarisDataSet ids )
     {
         for ( int c = 0; c < ids.getChannelNames().size(); ++c )
         {

@@ -28,14 +28,14 @@
  */
 package de.embl.cba.imaris;
 
-import ncsa.hdf.hdf5lib.H5;
+import hdf.hdf5lib.H5;
 import net.imglib2.FinalRealInterval;
 
 import java.util.ArrayList;
 
 public class ImarisReader {
 
-    int file_id;
+    long file_id;
 
     public ImarisReader( String directory, String filename )
     {
@@ -53,7 +53,6 @@ public class ImarisReader {
 
         for ( int c = 0; ; ++c )
         {
-
             String color = H5Utils.readStringAttribute( file_id,
                     ImarisUtils.DATA_SET_INFO
                             + "/" + ImarisUtils.CHANNEL + c,

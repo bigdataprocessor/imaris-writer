@@ -33,10 +33,10 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.measure.Calibration;
 import ij.process.ImageStatistics;
-import ncsa.hdf.hdf5lib.H5;
-import ncsa.hdf.hdf5lib.HDF5Constants;
-import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
-import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
+import hdf.hdf5lib.H5;
+import hdf.hdf5lib.HDF5Constants;
+import hdf.hdf5lib.exceptions.HDF5Exception;
+import hdf.hdf5lib.exceptions.HDF5LibraryException;
 
 import static de.embl.cba.imaris.H5Utils.writeDoubleAttribute;
 import static de.embl.cba.imaris.H5Utils.writeStringAttribute;
@@ -44,10 +44,9 @@ import static de.embl.cba.imaris.ImarisUtils.*;
 
 public class H5DataCubeWriter
 {
-
-    private int file_id;
-    private int memory_type;
-    private int file_type;
+    private long file_id;
+    private long memory_type;
+    private long file_type;
 
     public void writeImarisCompatibleResolutionPyramid(
             ImagePlus imp,
@@ -100,7 +99,7 @@ public class H5DataCubeWriter
         {
             memory_type = HDF5Constants.H5T_NATIVE_USHORT;
 //            file_type = HDF5Constants.H5T_STD_U16BE; // BigEndian does not work
-              file_type = HDF5Constants.H5T_STD_U16LE;
+            file_type = HDF5Constants.H5T_STD_U16LE;
         }
         else if ( imp.getBitDepth() == 32 )
         {
@@ -133,12 +132,12 @@ public class H5DataCubeWriter
                 chunkXYZ[ 1 ],
                 chunkXYZ[ 0 ] };
 
-        int group_id = H5Utils.createGroup( file_id, group );
+        long group_id = H5Utils.createGroup( file_id, group );
 
-        int dataspace_id = H5.H5Screate_simple( dimension.length, dimension, null );
+        long dataspace_id = H5.H5Screate_simple( dimension.length, dimension, null );
 
         // create "dataset creation property list" (dcpl)
-        int dcpl_id = H5.H5Pcreate( HDF5Constants.H5P_DATASET_CREATE );
+        long dcpl_id = H5.H5Pcreate( HDF5Constants.H5P_DATASET_CREATE );
 
         // chunks
         H5.H5Pset_chunk( dcpl_id, chunk.length, chunk );
@@ -147,7 +146,7 @@ public class H5DataCubeWriter
         H5.H5Pset_deflate( dcpl_id, 2);
 
         // create dataset
-        int dataset_id = -1;
+        long dataset_id = -1;
         try
         {
             dataset_id = H5.H5Dcreate(
@@ -178,9 +177,9 @@ public class H5DataCubeWriter
 
     }
 
-    private void writeImagePlusData( int dataset_id, ImagePlus imp, long[] chunkXYZ ) throws HDF5Exception
+    private void writeImagePlusData( long dataset_id, ImagePlus imp, long[] chunkXYZ ) throws HDF5Exception
     {
-        int dataspace_id;
+        long dataspace_id;
 
         long numElements = 1L * imp.getWidth() * imp.getHeight() * imp.getNSlices();
         boolean javaIndexingIssue = numElements > getMaximumArrayIndex();
@@ -224,7 +223,7 @@ public class H5DataCubeWriter
                     );
 
                     // Create memspace
-                    int memspace = H5.H5Screate_simple( 1,
+                    long memspace = H5.H5Screate_simple( 1,
                             new long[]{ slice.length }, null );
 
                     // write
@@ -287,7 +286,7 @@ public class H5DataCubeWriter
                     );
 
                     // Create memspace
-                    int memspace = H5.H5Screate_simple(
+                    long memspace = H5.H5Screate_simple(
                             1,
                             new long[]{ slice.length * nz },
                             null );
@@ -321,7 +320,7 @@ public class H5DataCubeWriter
 
     }
 
-    private void writeSizeAttributes( int group_id, long[] dimension )
+    private void writeSizeAttributes( long group_id, long[] dimension )
     {
         for ( int d = 0; d < 3; ++d )
         {
@@ -331,7 +330,7 @@ public class H5DataCubeWriter
         }
     }
 
-    private void writeChunkAttributes( int group_id, long[] chunks )
+    private void writeChunkAttributes( long group_id, long[] chunks )
     {
         for ( int d = 0; d < 3; ++d )
         {
@@ -341,7 +340,7 @@ public class H5DataCubeWriter
         }
     }
 
-    private void writeCalibrationAttribute( int object_id, Calibration calibration )
+    private void writeCalibrationAttribute( long object_id, Calibration calibration )
     {
 
         double[] calibrationXYZ = new double[]
@@ -351,13 +350,13 @@ public class H5DataCubeWriter
                         calibration.pixelDepth
                 };
 
-        writeDoubleAttribute(  object_id, "element_size_um", calibrationXYZ );
+        writeDoubleAttribute( object_id, "element_size_um", calibrationXYZ );
 
     }
 
     private void writeHistogramAndAttributes(ImagePlus imp, String group )
     {
-        int group_id = H5Utils.createGroup( file_id, group );
+        long group_id = H5Utils.createGroup( file_id, group );
 
         ImageStatistics imageStatistics = imp.getStatistics();
 
@@ -376,10 +375,10 @@ public class H5DataCubeWriter
 
         long[] histo_dims = { histogram.length };
 
-        int histo_dataspace_id = H5.H5Screate_simple(
+        long histo_dataspace_id = H5.H5Screate_simple(
                 histo_dims.length, histo_dims, null);
 
-        int histo_dataset_id = H5.H5Dcreate( group_id, HISTOGRAM,
+        long histo_dataset_id = H5.H5Dcreate( group_id, HISTOGRAM,
                 HDF5Constants.H5T_STD_U64LE, histo_dataspace_id,
                 HDF5Constants.H5P_DEFAULT,
                 HDF5Constants.H5P_DEFAULT,
@@ -389,7 +388,6 @@ public class H5DataCubeWriter
                 HDF5Constants.H5T_NATIVE_ULLONG,
                 HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
                 HDF5Constants.H5P_DEFAULT, histogram);
-
 
         writeStringAttribute( group_id,
                 HISTOGRAM + "Min",
@@ -405,9 +403,9 @@ public class H5DataCubeWriter
 
     }
 
-    private int createFile( String directory, String filename )
+    private long createFile( String directory, String filename )
     {
-        return ( H5Utils.createFile( directory, filename  ) );
+        return( H5Utils.createFile( directory, filename  ) );
     }
 
     private byte[] getByteData( ImagePlus imp, int c, int t )

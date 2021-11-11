@@ -28,10 +28,10 @@
  */
 package de.embl.cba.imaris;
 
-import ncsa.hdf.hdf5lib.H5;
-import ncsa.hdf.hdf5lib.HDF5Constants;
-import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
-import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
+import hdf.hdf5lib.H5;
+import hdf.hdf5lib.HDF5Constants;
+import hdf.hdf5lib.exceptions.HDF5Exception;
+import hdf.hdf5lib.exceptions.HDF5LibraryException;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -46,14 +46,14 @@ public abstract class H5Utils
         long[] attrDims = { attrValue.length };
 
         // Create the data space for the attribute.
-        int dataspace_id = H5.H5Screate_simple(attrDims.length, attrDims, null);
+        long dataspace_id = H5.H5Screate_simple(attrDims.length, attrDims, null);
 
         // Create a dataset attribute.
 //        int attribute_id = H5.H5Acreate(dataset_id, attrName,
 //                HDF5Constants.H5T_STD_I32BE, dataspace_id,
 //                HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 
-        int attribute_id = H5.H5Acreate(dataset_id, attrName,
+        long attribute_id = H5.H5Acreate(dataset_id, attrName,
                 HDF5Constants.H5T_STD_I32BE, dataspace_id,
                 HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT );
 
@@ -64,16 +64,16 @@ public abstract class H5Utils
         H5.H5Aclose(attribute_id);
     }
 
-    public static void writeDoubleAttribute( int dataset_id, String attrName, double[] attrValue ) throws HDF5Exception
+    public static void writeDoubleAttribute( long dataset_id, String attrName, double[] attrValue ) throws HDF5Exception
     {
 
         long[] attrDims = { attrValue.length };
 
         // Create the data space for the attribute.
-        int dataspace_id = H5.H5Screate_simple(attrDims.length, attrDims, null);
+        long dataspace_id = H5.H5Screate_simple(attrDims.length, attrDims, null);
 
         // Create a dataset attribute.
-        int attribute_id = H5.H5Acreate(dataset_id, attrName,
+        long attribute_id = H5.H5Acreate(dataset_id, attrName,
                 HDF5Constants.H5T_IEEE_F64BE, dataspace_id,
                 HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT );
 
@@ -84,13 +84,13 @@ public abstract class H5Utils
         H5.H5Aclose(attribute_id);
     }
 
-    public static void writeStringAttribute( int dataset_id, String attrName, String attrValue )
+    public static void writeStringAttribute( long dataset_id, String attrName, String attrValue )
     {
 
         long[] attrDims = { attrValue.getBytes().length };
 
         // Create the data space for the attribute.
-        int dataspace_id = H5.H5Screate_simple(attrDims.length, attrDims, null);
+        long dataspace_id = H5.H5Screate_simple(attrDims.length, attrDims, null);
 
         // Create the data space for the attribute.
         //int dataspace_id = H5.H5Screate( HDF5Constants.H5S_SCALAR );
@@ -99,10 +99,10 @@ public abstract class H5Utils
         //int type_id = H5.H5Tcopy( HDF5Constants.H5T_C_S1 );
         //H5.H5Tset_size(type_id, attrValue.length());
 
-        int type_id = HDF5Constants.H5T_C_S1;
+        long type_id = HDF5Constants.H5T_C_S1;
 
         // Create a dataset attribute.
-        int attribute_id = H5.H5Acreate( dataset_id, attrName,
+        long attribute_id = H5.H5Acreate( dataset_id, attrName,
                 type_id, dataspace_id,
                 HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 
@@ -129,10 +129,9 @@ public abstract class H5Utils
 
         long[] data_dims = { data.length, data[0].length };
 
-        int dataspace_id = H5.H5Screate_simple( data_dims.length, data_dims, null );
+        long dataspace_id = H5.H5Screate_simple( data_dims.length, data_dims, null );
 
-
-        int dataset_id = H5.H5Dcreate(group_id, name,
+        long dataset_id = H5.H5Dcreate(group_id, name,
                 HDF5Constants.H5T_STD_I32LE, dataspace_id,
                 HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT );
 
@@ -161,9 +160,9 @@ public abstract class H5Utils
 
         long[] data_dims = { list.size(), list.get(0).length };
 
-        int dataspace_id = H5.H5Screate_simple( data_dims.length, data_dims, null );
+        long dataspace_id = H5.H5Screate_simple( data_dims.length, data_dims, null );
 
-        int dataset_id = H5.H5Dcreate( group_id, name,
+        long dataset_id = H5.H5Dcreate( group_id, name,
                 HDF5Constants.H5T_IEEE_F64BE, dataspace_id,
                 HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT );
 
@@ -193,9 +192,9 @@ public abstract class H5Utils
 
         long[] data_dims = { list.size(), list.get(0).length };
 
-        int dataspace_id = H5.H5Screate_simple( data_dims.length, data_dims, null );
+        long dataspace_id = H5.H5Screate_simple( data_dims.length, data_dims, null );
 
-        int dataset_id = H5.H5Dcreate( group_id, name,
+        long dataset_id = H5.H5Dcreate( group_id, name,
                 HDF5Constants.H5T_IEEE_F64BE, dataspace_id,
                 HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT );
 
@@ -208,9 +207,9 @@ public abstract class H5Utils
 
     }
 
-    public static int createGroup( int file_id, String groupName ) throws HDF5LibraryException
+    public static long createGroup( long file_id, String groupName ) throws HDF5LibraryException
     {
-        int group_id;
+        long group_id;
 
         try
         {
@@ -221,7 +220,7 @@ public abstract class H5Utils
         {
 
             // create group (and intermediate groups)
-            int gcpl_id = H5.H5Pcreate( HDF5Constants.H5P_LINK_CREATE );
+            long gcpl_id = H5.H5Pcreate( HDF5Constants.H5P_LINK_CREATE );
             H5.H5Pset_create_intermediate_group( gcpl_id, true );
             group_id = H5.H5Gcreate(file_id, groupName, gcpl_id, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT );
         }
@@ -230,9 +229,9 @@ public abstract class H5Utils
 
     }
 
-    public static int openGroup( int file_id, String groupName )
+    public static long openGroup( int file_id, String groupName )
     {
-        int group_id;
+        long group_id;
 
         try
         {
@@ -244,16 +243,15 @@ public abstract class H5Utils
         }
 
         return ( group_id );
-
     }
 
 
-    public static int openFile( String directory, String filename )
+    public static long openFile( String directory, String filename )
     {
         String path = directory + File.separator + filename;
         File file = new File( path );
 
-        int file_id = -1;
+        long file_id = -1;
 
         if ( file.exists() )
         {
@@ -268,11 +266,10 @@ public abstract class H5Utils
         }
 
         return ( file_id );
-
     }
 
 
-    public static int createFile( String directory, String filename )
+    public static long createFile( String directory, String filename )
     {
         String path = directory + File.separator + filename;
 
@@ -283,13 +280,13 @@ public abstract class H5Utils
             file.delete();
         }
 
-        int file_id = H5.H5Fcreate(
+        long file_id = H5.H5Fcreate(
                 path,
                 HDF5Constants.H5F_ACC_TRUNC,
                 HDF5Constants.H5P_DEFAULT,
                 HDF5Constants.H5P_DEFAULT);
 
-        return ( file_id );
+        return( file_id );
 
     }
 
@@ -297,8 +294,8 @@ public abstract class H5Utils
     {
         try
         {
-            int dataset_id = H5.H5Dopen( object_id, dataName, HDF5Constants.H5P_DEFAULT );
-            int dataspace_id = H5.H5Dget_space( dataset_id );
+            long dataset_id = H5.H5Dopen( object_id, dataName, HDF5Constants.H5P_DEFAULT );
+            long dataspace_id = H5.H5Dget_space( dataset_id );
 
             int ndims = H5.H5Sget_simple_extent_ndims( dataspace_id );
 
@@ -314,7 +311,7 @@ public abstract class H5Utils
         }
     }
 
-    public static String readStringAttribute( int object_id,
+    public static String readStringAttribute( long object_id,
                                               String objectName,
                                               String attributeName )
     {
@@ -322,25 +319,24 @@ public abstract class H5Utils
 
         try
         {
-            int attribute_id = H5.H5Aopen_by_name( object_id, objectName, attributeName,
-                    HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT );
+            long attribute_id = H5.H5Aopen_by_name( object_id, objectName, attributeName, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT );
 
             if ( attribute_id < 0 )
             {
                 return null;
             }
 
-            int filetype_id = H5.H5Aget_type( attribute_id );
-            int sdim = H5.H5Tget_size( filetype_id );
+            long filetype_id = H5.H5Aget_type( attribute_id );
+            long sdim = H5.H5Tget_size( filetype_id );
             sdim++; // Make room for null terminator
-            int dataspace_id = H5.H5Aget_space( attribute_id );
+            long dataspace_id = H5.H5Aget_space( attribute_id );
             long[] dims = { 4 };
             H5.H5Sget_simple_extent_dims( dataspace_id, dims, null );
             byte[][] dset_data = new byte[ ( int ) dims[ 0 ] ][ ( int ) sdim ];
             StringBuffer[] str_data = new StringBuffer[ ( int ) dims[ 0 ] ];
 
             // Create the memory datatype.
-            int memtype_id = H5.H5Tcopy( HDF5Constants.H5T_C_S1 );
+            long memtype_id = H5.H5Tcopy( HDF5Constants.H5T_C_S1 );
             H5.H5Tset_size( memtype_id, sdim );
 
             // Read data.
