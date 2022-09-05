@@ -30,11 +30,11 @@ package tests;
 
 import bdv.img.imaris.Imaris;
 import bdv.spimdata.SpimDataMinimal;
-import bdv.util.BdvFunctions;
 import de.embl.cba.imaris.ImarisWriter;
 import ij.CompositeImage;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.GenericDialog;
 import ij.process.LUT;
 import mpicbg.spim.data.SpimDataException;
 import org.junit.Test;
@@ -62,9 +62,6 @@ public class TestSave16bitImagePlus
 		writer.write();
 
 		final SpimDataMinimal spimDataMinimal = Imaris.openIms( TestConstants.TEST_FOLDER + outputFolder + File.separator + fileName + "-header.ims");
-
-		if ( TestConstants.interactive )
-			BdvFunctions.show( spimDataMinimal );
 	}
 
 	public static void main( String[] args ) throws SpimDataException, IOException
