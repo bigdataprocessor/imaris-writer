@@ -11,7 +11,7 @@
 
 	<groupId>de.embl.cba</groupId>
 	<artifactId>imaris-writer</artifactId>
-	<version>1.0.6-SNAPSHOT</version>
+	<version>1.0.6</version>
 	<name>imaris-writer</name>
 	<description>imaris-writer</description>
 	<url>https://github.com/tischi/imaris-writer</url>
@@ -54,7 +54,7 @@
 	<scm>
 		<connection>scm:git:git://github.com/bigdataprocessor/imaris-writer</connection>
 		<developerConnection>scm:git:git@github.com:bigdataprocessor/imaris-writer</developerConnection>
-		<tag>HEAD</tag>
+		<tag>imaris-writer-1.0.6</tag>
 		<url>https://github.com/bigdataprocessor/imaris-writer</url>
 	</scm>
 	<issueManagement>
