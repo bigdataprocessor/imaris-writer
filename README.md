@@ -1,4 +1,4 @@
-[![](https://travis-ci.com/tischi/imaris-writer.svg?branch=master)](https://travis-ci.com/tischi/imaris-writer)
+[![](https://github.com/bigdataprocesser/imaris-writer/actions/workflows/build.yml/badge.svg)](https://github.com/bigdataprocesser/imaris-writer/actions/workflows/build.yml)
 
 # imaris-writer
 
