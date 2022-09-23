@@ -52,14 +52,14 @@
 		</mailingList>
 	</mailingLists>
 	<scm>
-		<connection>scm:git:git://github.com/bigdataprocesser/imaris-writer</connection>
-		<developerConnection>scm:git:git@github.com:bigdataprocesser/imaris-writer</developerConnection>
+		<connection>scm:git:git://github.com/bigdataprocessor/imaris-writer</connection>
+		<developerConnection>scm:git:git@github.com:bigdataprocessor/imaris-writer</developerConnection>
 		<tag>HEAD</tag>
-		<url>https://github.com/bigdataprocesser/imaris-writer</url>
+		<url>https://github.com/bigdataprocessor/imaris-writer</url>
 	</scm>
 	<issueManagement>
 		<system>GitHub</system>
-		<url>https://github.com/bigdataprocesser/imaris-writer/issues</url>
+		<url>https://github.com/bigdataprocessor/imaris-writer/issues</url>
 	</issueManagement>
 	<ciManagement>
 		<system>None</system>
